@@ -145,5 +145,31 @@ class Journal
   end
 end
 
+def usage
+  puts "Usage: ruby journal.rb action <date>"
+  puts "Actions:"
+  puts "  new - Create a new journal entry for today"
+  puts "  edit - Edit an entry for the given date in format MM/DD/YY"
+  exit
+end
+
 journal = Journal.new 'journal.txt'
-journal.new_entry
+
+case ARGV[0]
+  when "new", nil
+    journal.new_entry
+  when "edit"
+    require 'date'
+    if !ARGV[1].nil? &&
+        !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil? &&
+        Date.valid_date?(Integer(ARGV[1][6..7]),
+                          Integer(ARGV[1][0..1]),
+                          Integer(ARGV[1][3..4]))
+      journal.edit_entry ARGV[1]
+    else
+      puts "Invalid Date - Please enter date in the format MM/DD/YY"
+      exit
+    end
+  else
+    usage
+end
