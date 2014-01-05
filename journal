@@ -1,0 +1,8 @@
+#!/bin/sh
+which ruby > /dev/null
+if [ $? -eq 1 ]; then
+  echo "Journal.txt requires ruby to be installed and in your PATH in order to run."
+  exit 1
+fi
+
+ruby journal.rb "$@"
