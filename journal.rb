@@ -146,7 +146,7 @@ class Journal
 end
 
 def usage
-  puts "Usage: ruby journal.rb action <date>"
+  puts "Usage: journal action <date>"
   puts "Actions:"
   puts "  new - Create a new journal entry for today"
   puts "  edit - Edit an entry for the given date in format MM/DD/YY"
