@@ -103,10 +103,10 @@ class Journal
     file = File.new(@filename, 'r')
 
     file.each do |line|
-      if line == "STARTENTRY\n"
+      if line == "ENTRYSTART\n"
         current_entry = ""
         next
-      elsif line == "ENDENTRY\n"
+      elsif line == "ENTRYEND\n"
         if !entry_found
           write_entry(before_file, current_entry, current_entry_date)
         elsif entry_found && !entry_complete
@@ -115,7 +115,7 @@ class Journal
         elsif entry_complete
           write_entry(after_file, current_entry, current_entry_date)
         end
-      elsif line.start_with?("DATE ")
+      elsif line.start_with?("ENTRYDATE ")
         current_entry_date = line.split(' ')[1]
         if current_entry_date == date
           entry_found = true
@@ -138,10 +138,10 @@ class Journal
   end
 
   def write_entry(file, content, date)
-    file.puts "STARTENTRY"
-    file.puts "DATE #{date}"
+    file.puts "ENTRYSTART"
+    file.puts "ENTRYDATE #{date}"
     file.puts content
-    file.puts "ENDENTRY"
+    file.puts "ENTRYEND"
   end
 end
 
