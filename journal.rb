@@ -174,7 +174,6 @@ case ARGV[0]
       journal.edit_entry ARGV[1]
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
-      exit
     end
   else
     usage
