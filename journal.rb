@@ -35,6 +35,12 @@ class Journal
     tmp_filename = "/tmp/journal_#{ENV['USER']}_#{@now.strftime('%s')}.txt"
     system "vim #{tmp_filename}"
 
+    #If the user just quit their editor without saving anything, exit gracefully
+    if !File.exists?(tmp_filename)
+      puts "No entry created for today."
+      return
+    end
+
     #Create File objects for the files needed
     new_file = File.new("#{@filename}.new", 'w+')
     old_file = File.new(@filename, 'r')
