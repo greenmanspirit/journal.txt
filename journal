@@ -31,4 +31,6 @@ if [ $? -eq 1 ]; then
   exit 1
 fi
 
-ruby journal.rb "$@"
+ABSOLUTE_SCRIPT_PATH=$(readlink -f "$0")
+SCRIPT_DIR=$(dirname "$ABSOLUTE_SCRIPT_PATH")
+ruby "$SCRIPT_DIR/journal.rb" "$@"
