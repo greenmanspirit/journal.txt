@@ -13,12 +13,12 @@ The following actions are currently supported
 * edit - Edit an entry for the given date in format MM/DD/YY
 
 ###Additional Details
-* The journal script needs to be run in the same directory as journal.rb and the journal.txt file
+* journal.txt file will live wherever you run the journal script
 * The only date format recognized is MM/DD/YY
 
 Installation
 ------------
-Cloning the repo is all that you need to do in it's current state.
+Cloning the repo is all that you need to do in it's current state. Please keep all files together.
 
 journal.txt File Format
 -----------------------
