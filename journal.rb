@@ -29,6 +29,22 @@ class Journal
     #Just set the filename for the object and grab the current time
     @filename = journal_file
     @now = Time.now
+
+    #Check for the existance of the journal file and create if it doesn't exist
+    #  and user wants to create it, otherwise exit
+    if !File.exist? @filename
+      print "Journal file [#{@filename}] does not exist. "
+      print "Would you like to create it? [y/n](n) "
+      if STDIN.gets.chomp.downcase == 'y'
+        puts "Created #{@filename}"
+        File.open(@filename, "w") do |f|
+          f.puts
+        end
+      else
+        puts "Cannot work without a journal file, exiting."
+        exit
+      end
+    end
   end
 
   #new_entry - Create a new journal entry for todays date
@@ -49,7 +65,7 @@ class Journal
 
     #Create File objects for the files needed
     new_file = File.new("#{@filename}.new", 'w+')
-    old_file = File.new(@filename, 'r')
+    old_file = File.new(@filename, 'w+')
 
     #Add the new journal entry
     entry_contents = ""
