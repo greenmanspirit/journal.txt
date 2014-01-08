@@ -36,9 +36,8 @@ class Journal
       print "Journal file [#{@filename}] does not exist. "
       print "Would you like to create it? [y/n](n) "
       if STDIN.gets.chomp.downcase == 'y'
-        puts "Created #{@filename}"
         File.open(@filename, "w") do |f|
-          f.puts
+          puts "Created #{@filename}"
         end
       else
         puts "Cannot work without a journal file, exiting."
@@ -53,6 +52,25 @@ class Journal
   #  Return:
   #    None
   def new_entry
+    #Get todays date for use below
+    todays_date = @now.strftime('%D')
+
+    #Open the journal and if the file has contents check the second line to see 
+    #  if it was done today and pass off the work to edit
+    old_file = File.new(@filename, 'r')
+    if !File.zero? @filename
+      old_file.gets
+      date = old_file.gets
+      if(date.split(' ')[1] == todays_date)
+        old_file.close
+        edit_entry todays_date
+        return
+      else
+        #If this isn't an entry for today, rewind the file to be used below
+        old_file.rewind
+      end
+    end
+
     #Get the new journal entry
     tmp_filename = "/tmp/journal_#{ENV['USER']}_#{@now.strftime('%s')}.txt"
     system "vim #{tmp_filename}"
@@ -65,7 +83,6 @@ class Journal
 
     #Create File objects for the files needed
     new_file = File.new("#{@filename}.new", 'w+')
-    old_file = File.new(@filename, 'w+')
 
     #Add the new journal entry
     entry_contents = ""
@@ -74,7 +91,7 @@ class Journal
          entry_contents += line
       end
     end
-    write_entry(new_file, entry_contents, @now.strftime('%D'))
+    write_entry(new_file, entry_contents, todays_date)
 
     #Add the rest of the journal
     old_file.each do |line|
@@ -82,6 +99,8 @@ class Journal
     end
 
     #File cleanup
+    old_file.close;
+    new_file.close;
     File.delete tmp_filename
     File.rename("#{@filename}.new", @filename)
   end
