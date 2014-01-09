@@ -76,7 +76,7 @@ class Journal
     system "vim #{tmp_filename}"
 
     #If the user just quit their editor without saving anything, exit gracefully
-    if !File.exists?(tmp_filename)
+    if !File.exists?(tmp_filename) || File.zero?(tmp_filename)
       puts "No entry created for today."
       return
     end
