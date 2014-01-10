@@ -10,7 +10,8 @@ Usage
 The following actions are currently supported:
 
 * new - Create a new journal entry for today (default action if none given).
-* edit - Edit an entry for the given date in format MM/DD/YY.
+* edit - Edit the entry for the given date in format MM/DD/YY.
+* date - Delete the entry for the given date in format MM/DD/YY.
 
 ###Additional Details
 * journal.txt file will live wherever you run the journal script.
