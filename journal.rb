@@ -35,7 +35,7 @@ class Journal
     if !File.exist? @filename
       print "Journal file [#{@filename}] does not exist. "
       print "Would you like to create it? [y/n](n) "
-      if STDIN.gets.chomp.downcase == 'y'
+      if STDIN.gets.chomp.downcase == "y"
         File.open(@filename, "w") do |f|
           puts "Created #{@filename}"
         end
@@ -53,15 +53,15 @@ class Journal
   #    None
   def new_entry
     #Get todays date for use below
-    todays_date = @now.strftime('%D')
+    todays_date = @now.strftime("%D")
 
     #Open the journal and if the file has contents check the second line to see 
     #  if it was done today and pass off the work to edit
-    old_file = File.new(@filename, 'r')
+    old_file = File.new(@filename, "r")
     if !File.zero? @filename
       old_file.gets
       date = old_file.gets
-      if(date.split(' ')[1] == todays_date)
+      if(date.split(" ")[1] == todays_date)
         old_file.close
         edit_entry todays_date
         return
@@ -72,7 +72,7 @@ class Journal
     end
 
     #Get the new journal entry
-    tmp_filename = "/tmp/journal_#{ENV['USER']}_#{@now.strftime('%s')}.txt"
+    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{@now.strftime("%s")}.txt"
     system "vim #{tmp_filename}"
 
     #If the user just quit their editor without saving anything, exit gracefully
@@ -82,26 +82,22 @@ class Journal
     end
 
     #Create File objects for the files needed
-    new_file = File.new("#{@filename}.new", 'w+')
+    new_file = File.new("#{@filename}.new", "w+")
 
     #Add the new journal entry
     entry_contents = ""
-    File.open tmp_filename do |t|
-      t.each do |line|
-         entry_contents += line
-      end
+    tmp_file = File.open(tmp_filename, "r")
+    tmp_file.each do |line|
+       entry_contents += line
     end
     write_entry(new_file, entry_contents, todays_date)
 
     #Add the rest of the journal
-    old_file.each do |line|
-      new_file.print line
-    end
+    write_file(old_file, new_file)
 
     #File cleanup
-    old_file.close;
-    new_file.close;
-    File.delete tmp_filename
+    cleanup(old_file, tmp_file)
+    new_file.close
     File.rename("#{@filename}.new", @filename)
   end
 
@@ -112,11 +108,11 @@ class Journal
   #    None
   def edit_entry(date)
     #Prep the files I will need
-    before_file = File.new("#{@filename}.before", 'w+')
-    after_file = File.new("#{@filename}.after", 'w+')
-    tmp_filename = "/tmp/journal_#{ENV['USER']}_#{@now.strftime('%s')}.txt"
-    tmp_file = File.new(tmp_filename, 'w+')
-    new_file = File.new("#{@filename}.new", 'w+')
+    before_file = File.new("#{@filename}.before", "w+")
+    after_file = File.new("#{@filename}.after", "w+")
+    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{@now.strftime("%s")}.txt"
+    tmp_file = File.new(tmp_filename, "w+")
+    new_file = File.new("#{@filename}.new", "w+")
 
     #Get the requested entry or state no entry if none returned
     entry = find_entry(before_file, after_file, date) || "No entry for #{date}"
@@ -128,10 +124,9 @@ class Journal
 
     #Get the edited contents
     entry_contents = ""
-    File.open tmp_filename do |t|
-      t.each do |line|
-         entry_contents += line
-      end
+    tmp_file = File.open(tmp_filename, "r")
+    tmp_file.each do |line|
+      entry_contents += line
     end
 
     #If the user emptied the file, that is essentially a delete, ask if they
@@ -139,16 +134,11 @@ class Journal
     if entry_contents.empty?
       puts "This would create an empty journal entry."
       print "Would you like to delete the entry? [y/n](y) "
-      if STDIN.gets.chomp.downcase == 'n'
+      if STDIN.gets.chomp.downcase == "n"
         puts "Leaving the entry as is."
 
         #Close out the files and clean everything up
-        before_file.close
-        after_file.close
-        File.delete tmp_filename
-        File.delete "#{@filename}.before"
-        File.delete "#{@filename}.after"
-        File.delete "#{@filename}.new"
+        cleanup(before_file, after_file, tmp_file, new_file)
         exit
       else
         delete_entry date
@@ -157,20 +147,13 @@ class Journal
     end
 
     #Print the the before content, edited entry and after entry to a new file
-    before_file.each do |line|
-      new_file.print line
-    end
+    write_file(before_file, new_file)
     write_entry(new_file, entry_contents, date)
-    after_file.each do |line|
-      new_file.print line
-    end
+    write_file(after_file, new_file)
 
     #Close out the files and clean everything up
-    before_file.close
-    after_file.close
-    File.delete tmp_filename
-    File.delete "#{@filename}.before"
-    File.delete "#{@filename}.after"
+    cleanup(before_file, after_file, tmp_file)
+    new_file.close
     File.rename("#{@filename}.new", @filename)
   end
 
@@ -181,9 +164,9 @@ class Journal
   #    None
   def delete_entry(date)
     #Prep the files I will need
-    before_file = File.new("#{@filename}.before", 'w+')
-    after_file = File.new("#{@filename}.after", 'w+')
-    new_file = File.new("#{@filename}.new", 'w+')
+    before_file = File.new("#{@filename}.before", "w+")
+    after_file = File.new("#{@filename}.after", "w+")
+    new_file = File.new("#{@filename}.new", "w+")
 
     #Get the request entry if it exists
     entry = find_entry(before_file, after_file, date)
@@ -195,24 +178,18 @@ class Journal
     else
       #Make sure user wants to delete the entry, if not, exit gracefully
       print "Are you sure you want to delete the entry for #{date}? [y/n](n) "
-      if STDIN.gets.chomp.downcase != 'y'
+      if STDIN.gets.chomp.downcase != "y"
+        cleanup(before_file, after_file)
         exit
       end
       #Print the before content and after content to a new file
-      before_file.each do |line|
-        new_file.puts line
-      end
-      after_file.each do |line|
-        new_file.puts line
-      end
+      write_file(before_file, new_file)
+      write_file(after_fil, new_file)
       puts "Deleted entry"
     end
 
-    before_file.close
-    after_file.close
+    cleanup(before_file, after_file)
     new_file.close
-    File.delete "#{@filename}.before"
-    File.delete "#{@filename}.after"
     File.rename("#{@filename}.new", @filename)
   end
 
@@ -235,7 +212,7 @@ class Journal
     requested_entry = ""
 
     #Open the journal file so we can search it
-    file = File.new(@filename, 'r')
+    file = File.new(@filename, "r")
 
     #Since we are working with a text file that should be just as easibly human
     #  edited, there are no indexes at the beginning of the file to avoid a line
@@ -263,7 +240,7 @@ class Journal
         end
       #If we are on a date line, test the date to see if it's the one we want
       elsif line.start_with?("ENTRYDATE ")
-        current_entry_date = line.split(' ')[1]
+        current_entry_date = line.split(" ")[1]
         if current_entry_date == date
           entry_found = true
         end
@@ -302,6 +279,30 @@ class Journal
     file.puts content
     file.puts "ENTRYEND"
   end
+
+  #write_file - Write file1 to file2
+  #  Inputs:
+  #    file1 - File we are are writing
+  #    file2 - File we are writing to
+  #  Returns:
+  #    None
+  def write_file(file1, file2)
+    file1.each do |line|
+      file2.puts line
+    end
+  end
+
+  #cleanup - Cleans up files
+  #  Inputs:
+  #    files - array of files to cleanup
+  #  Returns:
+  #    None
+  def cleanup(*files)
+    files.each do |f|
+      f.close
+      File.delete f.path
+    end
+  end
 end
 
 #usage - Prints applications usage message
@@ -319,7 +320,7 @@ def usage
 end
 
 #Create a new journal object fo the journal.txt file
-journal = Journal.new 'journal.txt'
+journal = Journal.new "journal.txt"
 
 #Check to see what action was given as the first argument
 case ARGV[0]
@@ -328,7 +329,7 @@ case ARGV[0]
     journal.new_entry
   when "edit"
     #Require the date object to take advantage of its valid_date? method
-    require 'date'
+    require "date"
     #Basically, if we are in edit, then the second argument has to exist, has to
     #  be in the format MM/DD/YY and has to be a valid date. If all that is the
     #  case, then edit the entry for that date else warn.
@@ -343,7 +344,7 @@ case ARGV[0]
     end
   when "delete"
     #Require the date object to take advantage of its valid_date? method
-    require 'date'
+    require "date"
     #Basically, if we are in edit, then the second argument has to exist, has to
     #  be in the format MM/DD/YY and has to be a valid date. If all that is the
     #  case, then edit the entry for that date else warn.
@@ -357,6 +358,6 @@ case ARGV[0]
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   else
-    #If an unrecognized action, print usage.
+    #If an unrecognized action, print usage
     usage
 end
