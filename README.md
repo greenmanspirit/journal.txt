@@ -11,7 +11,7 @@ The following actions are currently supported:
 
 * new - Create a new journal entry for today (default action if none given).
 * edit - Edit the entry for the given date in format MM/DD/YY.
-* date - Delete the entry for the given date in format MM/DD/YY.
+* delete - Delete the entry for the given date in format MM/DD/YY.
 
 ###Additional Details
 * journal.txt file will live wherever you run the journal script.
@@ -44,8 +44,8 @@ journal.txt File Format
 There are three tags needed for each entry in your journal.txt file in order for it to be compatible with this application.
 
 * ENTRYSTART - This designates the beginning of a journal entry,
+* ENTRYDATE - The date of the journal entry in the format MM/DD/YY, must fome directly after ENTRYSTART.
 * ENTRYEND - This designates the end of a journal entry.
-* ENTRYDATE - The date of the journal entry in the format MM/DD/YY, comes right after ENTRYSTART.
 
 Example journal.txt file:
 > ENTRYSTART  
