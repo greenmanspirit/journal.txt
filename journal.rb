@@ -343,11 +343,8 @@ case ARGV[0]
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   when "delete"
-    #Require the date object to take advantage of its valid_date? method
+    #Same logic as above to check for the date needed
     require "date"
-    #Basically, if we are in edit, then the second argument has to exist, has to
-    #  be in the format MM/DD/YY and has to be a valid date. If all that is the
-    #  case, then edit the entry for that date else warn.
     if !ARGV[1].nil? &&
         !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil? &&
         Date.valid_date?(Integer(ARGV[1][6..7]),
