@@ -316,6 +316,7 @@ def usage
   puts "  new - Create a new journal entry for today"
   puts "  edit - Edit an entry for the given date in format MM/DD/YY"
   puts "  delete - Delete entry for the given date in format MM/DD/YY"
+  puts "  help - Prints this help message"
   exit
 end
 
@@ -354,7 +355,12 @@ case ARGV[0]
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
+  when "help"
+    #This simply prints the usage message, this is so I can add a unknown
+    #  action line below
+    usage
   else
     #If an unrecognized action, print usage
+    puts "Unknown action: #{ARGV[0]}"
     usage
 end
