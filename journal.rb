@@ -184,7 +184,7 @@ class Journal
       end
       #Print the before content and after content to a new file
       write_file(before_file, new_file)
-      write_file(after_fil, new_file)
+      write_file(after_file, new_file)
       puts "Deleted entry"
     end
 
@@ -320,6 +320,31 @@ def usage
   exit
 end
 
+#valid_date? - Checks that the date given but the user is valid
+#  Inputs:
+#    date - the string to be checked for a valid date
+#  Returns:
+#    True if the string is a valid date
+#    False if the string is empty or invalid
+def valid_date?(date)
+  #Require date in order to make use of Date.valid_date?
+  require "date"
+
+  #Make sure we were passed something and that it is in the correct format
+  if !date.nil? && !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil?
+    #Split the date and test to ensure it is valid, if so return true
+    date_parts = date.split "/"
+    if Date.valid_date?(date_parts[3].to_i, 
+                        date_parts[1].to_i, 
+                        date_parts[2].to_i)
+      return true
+    end
+  end
+ 
+  #If we failed any of the above, indicating a bad date, then return false
+  return false
+end
+
 #Create a new journal object fo the journal.txt file
 journal = Journal.new "journal.txt"
 
@@ -329,28 +354,14 @@ case ARGV[0]
   when "new", nil
     journal.new_entry
   when "edit"
-    #Require the date object to take advantage of its valid_date? method
-    require "date"
-    #Basically, if we are in edit, then the second argument has to exist, has to
-    #  be in the format MM/DD/YY and has to be a valid date. If all that is the
-    #  case, then edit the entry for that date else warn.
-    if !ARGV[1].nil? &&
-        !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil? &&
-        Date.valid_date?(Integer(ARGV[1][6..7]),
-                          Integer(ARGV[1][0..1]),
-                          Integer(ARGV[1][3..4]))
+    #Check for a valid date and edit if we have one
+    if valid_date? ARGV[1]
       journal.edit_entry ARGV[1]
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   when "delete"
-    #Same logic as above to check for the date needed
-    require "date"
-    if !ARGV[1].nil? &&
-        !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil? &&
-        Date.valid_date?(Integer(ARGV[1][6..7]),
-                          Integer(ARGV[1][0..1]),
-                          Integer(ARGV[1][3..4]))
+    if valid_date? ARGV[1]
       journal.delete_entry ARGV[1]
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
