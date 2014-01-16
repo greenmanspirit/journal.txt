@@ -33,9 +33,11 @@ class Journal
     #Check for the existance of the journal file and create if it doesn't exist
     #  and user wants to create it, otherwise exit
     if !File.exist? @filename
-      print "Journal file [#{@filename}] does not exist. "
-      print "Would you like to create it? [y/n](n) "
-      if STDIN.gets.chomp.downcase == "y"
+      #print "Journal file [#{@filename}] does not exist. "
+      #print "Would you like to create it? [y/n](n) "
+      #if STDIN.gets.chomp.downcase == "y"
+      question = "Journal file [#{@filename}] does not exist?"
+      if query_user(question, 'y', 'n') == 'y'
         File.open(@filename, "w") do |f|
           puts "Created #{@filename}"
         end
@@ -133,8 +135,8 @@ class Journal
     #  want to delete the entry instead, otherwise, we won't edit the entry
     if entry_contents.empty?
       puts "This would create an empty journal entry."
-      print "Would you like to delete the entry? [y/n](y) "
-      if STDIN.gets.chomp.downcase == "n"
+      question = "Would you like to delete the entry?"
+      if query_user(question, 'y', 'n') == 'n'
         puts "Leaving the entry as is."
 
         #Close out the files and clean everything up
@@ -177,8 +179,8 @@ class Journal
       exit
     else
       #Make sure user wants to delete the entry, if not, exit gracefully
-      print "Are you sure you want to delete the entry for #{date}? [y/n](n) "
-      if STDIN.gets.chomp.downcase != "y"
+      question = "Are you sure you want to delete the entry for #{date}?"
+      if query_user(question, 'y', 'n') == "n"
         cleanup(before_file, after_file)
         exit
       end
@@ -343,6 +345,25 @@ def valid_date?(date)
  
   #If we failed any of the above, indicating a bad date, then return false
   return false
+end
+
+#query_user - Loops asking user the given question until a valid answer is given
+#  Inputs:
+#    question - Question to ask the user
+#    answers - Valid answers to the question
+#  Returns:
+#    The answer given by the user
+def query_user(question, *answers)
+  #Initialize answer to nothing for the save of the loop
+  answer = ''
+
+  #While we aren't given a valid answer, print the question and get the answer
+  while !answers.include? answer
+    print "#{question} [#{answers.join('/')}] "
+    answer = STDIN.gets.chomp.downcase
+  end
+
+  return answer
 end
 
 #Create a new journal object fo the journal.txt file
