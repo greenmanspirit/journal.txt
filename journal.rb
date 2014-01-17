@@ -40,7 +40,7 @@ class Journal
       #print "Would you like to create it? [y/n](n) "
       #if STDIN.gets.chomp.downcase == "y"
       question = "Journal file [#{@filename}] does not exist?"
-      if query_user(question, 'y', 'n') == 'y'
+      if query_user(question, "y", "n") == "y"
         File.open(@filename, "w") do |f|
           puts "Created #{@filename}"
         end
@@ -122,7 +122,7 @@ class Journal
     #Get the requested entry or state no entry if none returned
     entry = find_entry(before_file, after_file, date)
     if !entry 
-      puts "No entry for #{date.strftime('%D')}"
+      puts "No entry for #{date.strftime("%D")}"
       cleanup(before_file, after_file, tmp_file, new_file)
       exit
     end
@@ -144,7 +144,7 @@ class Journal
     if entry_contents.empty?
       puts "This would create an empty journal entry."
       question = "Would you like to delete the entry?"
-      if query_user(question, 'y', 'n') == 'n'
+      if query_user(question, "y", "n") == "n"
         puts "Leaving the entry as is."
 
         #Close out the files and clean everything up
@@ -183,13 +183,13 @@ class Journal
 
     #If we didn't find an entry, exit gracefully
     if entry == false
-      puts "No entry to delete for #{date.strftime('%D')}"
+      puts "No entry to delete for #{date.strftime("%D")}"
       cleanup(before_file, after_file, new_file)
       exit
     else
       #Make sure user wants to delete the entry, if not, exit gracefully
-      question = "Are you sure you want to delete the entry for #{date.strftime('%D')}?"
-      if query_user(question, 'y', 'n') == 'n'
+      question = "Are you sure you want to delete the entry for #{date.strftime("%D")}?"
+      if query_user(question, "y", "n") == "n"
         cleanup(before_file, after_file)
         exit
       end
@@ -251,7 +251,7 @@ class Journal
         end
       #If we are on a date line, test the date to see if it's the one we want
       elsif line.start_with?("ENTRYDATE ")
-        current_entry_date = Date.strptime(line.split(" ")[1], '%D')
+        current_entry_date = Date.strptime(line.split(" ")[1], "%D")
         if current_entry_date == date
           entry_found = true
         elsif !entry_found && current_entry_date < date
@@ -363,11 +363,11 @@ end
 #    The answer given by the user
 def query_user(question, *answers)
   #Initialize answer to nothing for the save of the loop
-  answer = ''
+  answer = ""
 
   #While we aren't given a valid answer, print the question and get the answer
   while !answers.include? answer
-    print "#{question} [#{answers.join('/')}] "
+    print "#{question} [#{answers.join("/")}] "
     answer = STDIN.gets.chomp.downcase
   end
 
@@ -386,13 +386,13 @@ case ARGV[0]
   when "edit"
     #Check for a valid date and edit if we have one
     if valid_date? ARGV[1]
-      journal.edit_entry Date.strptime(ARGV[1], '%D')
+      journal.edit_entry Date.strptime(ARGV[1], "%D")
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   when "delete"
     if valid_date? ARGV[1]
-      journal.delete_entry Date.strptime(ARGV[1], '%D')
+      journal.delete_entry Date.strptime(ARGV[1], "%D")
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
