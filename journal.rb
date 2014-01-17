@@ -368,6 +368,7 @@ def query_user(question, *answers)
     answer = STDIN.gets.chomp.downcase
   end
 
+  #return the answer we were given by the user
   return answer
 end
 
