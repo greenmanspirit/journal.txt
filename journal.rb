@@ -24,6 +24,9 @@
 #
 ################################################################################
 
+#Require date in order to make use of its functions
+require "date"
+
 class Journal
   def initialize(journal_file)
     #Just set the filename for the object and grab the current time
@@ -119,7 +122,7 @@ class Journal
     #Get the requested entry or state no entry if none returned
     entry = find_entry(before_file, after_file, date)
     if !entry 
-      puts "No entry for #{date}"
+      puts "No entry for #{date.strftime('%D')}"
       cleanup(before_file, after_file, tmp_file, new_file)
       exit
     end
@@ -180,12 +183,13 @@ class Journal
 
     #If we didn't find an entry, exit gracefully
     if entry == false
-      puts "No entry to delete for #{date}"
+      puts "No entry to delete for #{date.strftime('%D')}"
+      cleanup(before_file, after_file, new_file)
       exit
     else
       #Make sure user wants to delete the entry, if not, exit gracefully
-      question = "Are you sure you want to delete the entry for #{date}?"
-      if query_user(question, 'y', 'n') == "n"
+      question = "Are you sure you want to delete the entry for #{date.strftime('%D')}?"
+      if query_user(question, 'y', 'n') == 'n'
         cleanup(before_file, after_file)
         exit
       end
@@ -247,9 +251,11 @@ class Journal
         end
       #If we are on a date line, test the date to see if it's the one we want
       elsif line.start_with?("ENTRYDATE ")
-        current_entry_date = line.split(" ")[1]
+        current_entry_date = Date.strptime(line.split(" ")[1], '%D')
         if current_entry_date == date
           entry_found = true
+        elsif !entry_found && current_entry_date < date
+          break
         end
         next
       end
@@ -282,7 +288,7 @@ class Journal
   #    None
   def write_entry(file, content, date)
     file.puts "ENTRYSTART"
-    file.puts "ENTRYDATE #{date}"
+    file.puts "ENTRYDATE #{date.strftime("%D")}"
     file.puts content
     file.puts "ENTRYEND"
   end
@@ -334,9 +340,6 @@ end
 #    True if the string is a valid date
 #    False if the string is empty or invalid
 def valid_date?(date)
-  #Require date in order to make use of Date.valid_date?
-  require "date"
-
   #Make sure we were passed something and that it is in the correct format
   if !date.nil? && !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil?
     #Split the date and test to ensure it is valid, if so return true
@@ -383,13 +386,13 @@ case ARGV[0]
   when "edit"
     #Check for a valid date and edit if we have one
     if valid_date? ARGV[1]
-      journal.edit_entry ARGV[1]
+      journal.edit_entry Date.strptime(ARGV[1], '%D')
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   when "delete"
     if valid_date? ARGV[1]
-      journal.delete_entry ARGV[1]
+      journal.delete_entry Date.strptime(ARGV[1], '%D')
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
