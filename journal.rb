@@ -117,7 +117,12 @@ class Journal
     new_file = File.new("#{@filename}.new", "w+")
 
     #Get the requested entry or state no entry if none returned
-    entry = find_entry(before_file, after_file, date) || "No entry for #{date}"
+    entry = find_entry(before_file, after_file, date)
+    if !entry 
+      puts "No entry for #{date}"
+      cleanup(before_file, after_file, tmp_file, new_file)
+      exit
+    end
 
     #Place the entry into the tmpfile and open it up for the user to edit
     tmp_file.print entry
@@ -260,7 +265,7 @@ class Journal
     after_file.rewind
 
     #If we didn't find the requested entry, return false, otherwise, return the
-    #  entry. This is to take advantage of the || assignment
+    #  content of the entry.
     if(requested_entry == "")
       return false
     else
