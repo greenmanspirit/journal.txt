@@ -114,7 +114,7 @@ class Journal
     #Prep the files I will need
     before_file = File.new("#{@filename}.before", "w+")
     after_file = File.new("#{@filename}.after", "w+")
-    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{@now.strftime("%s")}.txt"
+    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{Time.now.strftime("%s")}.txt"
     tmp_file = File.new(tmp_filename, "w+")
     new_file = File.new("#{@filename}.new", "w+")
 
@@ -396,9 +396,9 @@ def valid_date?(date)
   if !date.nil? && !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil?
     #Split the date and test to ensure it is valid, if so return true
     date_parts = date.split "/"
-    if Date.valid_date?(date_parts[3].to_i, 
-                        date_parts[1].to_i, 
-                        date_parts[2].to_i)
+    if Date.valid_date?(date_parts[2].to_i,
+                        date_parts[0].to_i,
+                        date_parts[1].to_i)
       return true
     end
   end
