@@ -29,9 +29,8 @@ require "date"
 
 class Journal
   def initialize(journal_file)
-    #Just set the filename for the object and grab the current time
+    #Just set the filename for the object
     @filename = journal_file
-    @now = Time.now
 
     #Check for the existance of the journal file and create if it doesn't exist
     #  and user wants to create it, otherwise exit
@@ -58,7 +57,7 @@ class Journal
   #    None
   def new_entry
     #Get todays date for use below
-    todays_date = @now.strftime("%D")
+    todays_date = Date.today
 
     #Open the journal and if the file has contents check the second line to see 
     #  if it was done today and pass off the work to edit
@@ -77,7 +76,7 @@ class Journal
     end
 
     #Get the new journal entry
-    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{@now.strftime("%s")}.txt"
+    tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{Time.now.strftime("%s")}.txt"
     system "vim #{tmp_filename}"
 
     #If the user just quit their editor without saving anything, exit gracefully
