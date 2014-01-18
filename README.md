@@ -4,14 +4,16 @@ Journal.txt is a command line journaling program inspired by [Todo.txt](http://t
 
 Usage
 -----
-`journal action <date>`
+`journal action <date> <filter>`
 
 ###Actions
 The following actions are currently supported:
 
 * new - Create a new journal entry for today (default action if none given).
-* edit - Edit the entry for the given date in format MM/DD/YY.
-* delete - Delete the entry for the given date in format MM/DD/YY.
+* edit - Edit the entry for the given date in the format MM/DD/YY.
+* delete - Delete the entry for the given date in the format MM/DD/YY.
+* list - Lists all entries unless given a filter. Filter is in the format MM/DD/YY with \* being used as a wildcard: 01/\*/14 to list all entries from January 2014.
+
 
 ###Additional Details
 * journal.txt file will live wherever you run the journal script.

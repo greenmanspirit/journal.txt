@@ -204,6 +204,56 @@ class Journal
     File.rename("#{@filename}.new", @filename)
   end
 
+  #list_entries - Lists entry dates 
+  #  Inputs:
+  #    filter - String to filter dates by in format MM/DD/YY with * wildcard
+  #  Returns:
+  #    None
+  def list_entries(filter)
+    #Open the file so we can search it
+    file = File.open(@filename, 'r');
+
+    #If we were given a filter, process it
+    if !filter.nil?
+      #Split the filter up
+      month, day, year = filter.split "/"
+      #Check each part for a wildcard and put in \d* where necessary
+      if month == "*"
+        month = "\\d*"
+      end
+      if day == "*"
+        day = "\\d*"
+      end
+      if year == "*"
+        year = "\\d*"
+      end
+    else
+      #Set default regex pattern for each part
+      month = day = year = "\\d*"
+    end
+
+    #Build the regex
+    filter_regex = /#{month}\/#{day}\/#{year}/
+
+    #This is to keep track of how many entries we have found
+    count = 0
+
+    #Loop through the file testing lines for date
+    file.each do |line|
+      if line.start_with?("ENTRYDATE ")
+        date = line.split(" ")[1]
+        #If we found a date we care about, print it out
+        if !filter_regex.match(date).nil?
+          puts date
+          count += 1
+        end
+      end
+    end
+
+    #Tell the user how many we have found
+    puts "Found #{count} entries"
+  end
+
   private
 
   #find_entry - Tries to find a journal entry for a given date
@@ -324,12 +374,15 @@ end
 #  Returns:
 #    None
 def usage
-  puts "Usage: journal action <date>"
+  puts "Usage: journal action <date> <filter>"
   puts "Actions:"
-  puts "  new - Create a new journal entry for today"
-  puts "  edit - Edit an entry for the given date in format MM/DD/YY"
-  puts "  delete - Delete entry for the given date in format MM/DD/YY"
-  puts "  help - Prints this help message"
+  puts "  new - Create a new journal entry for today."
+  puts "  edit - Edit an entry for the given date in the format MM/DD/YY."
+  puts "  delete - Delete entry for the given date in the format MM/DD/YY."
+  puts "  list - Lists all entries unless given a filter. Filter is in the"
+  puts "         format MM/DD/YY with * being used as a wilcard: 01/*/14"
+  puts "         to list all entries from January 2014."
+  puts "  help - Prints this help message."
   exit
 end
 
@@ -396,6 +449,8 @@ case ARGV[0]
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
+  when "list"
+    journal.list_entries ARGV[1]
   when "help"
     #This simply prints the usage message, this is so I can add a unknown
     #  action line below
