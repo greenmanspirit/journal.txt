@@ -1,0 +1,148 @@
+#!/bin/sh
+################################################################################
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 Adam C Hobaugh
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+###############################################################################
+
+#
+# This file contains the utitility fuctions used in the test script
+#
+
+#Set colors needed for easy use
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+NC='\e[0m' #No color
+
+#Just prints out what test we are on
+start_test()
+{
+  echo "$1 Test"
+  TESTS=`expr $TESTS + 1`
+}
+
+#Assert that the journal.txt file exists
+assert_exists()
+{
+  if [ ! -f journal.txt ]; then 
+    echo -e "${RED}FAILED: assert_not_exists${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_not_exsts${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Assert that the journal.txt file does not exist
+assert_not_exists()
+{
+  if [ -f journal.txt ]; then
+    echo -e "${RED}FAILED: assert_exists${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_exists${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Convenience function for journal.txt file
+assert_contains()
+{
+  FILE=journal.txt
+  VALUE=$1
+  assert_file_contains $FILE "$VALUE"
+}
+
+#Assert that the given file contains the given value
+assert_file_contains()
+{
+  FILE=$1
+  VALUE=$2
+  grep "$VALUE" "$FILE" > /dev/null
+  if [ $? -eq 1 ]; then
+    echo -e "${RED}FAILED: assert_contains $VALUE${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_contains $VALUE${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Convenience function for journal.txt file
+assert_not_contains()
+{
+  FILE=journal.txt
+  VALUE=$1
+  assert_file_not_contains $FILE "$VALUE"
+}
+
+#Assert that the given file does not contain the given value
+assert_file_not_contains()
+{
+  FILE=$1
+  VALUE=$2
+  grep "$VALUE" "$FILE" > /dev/null
+  if [ $? -eq 0 ]; then
+    echo -e "${RED}FAILED: assert_not_contains $VALUE${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_not_contains $VALUE${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Assert that the given value occurs on the given line in journal.txt
+assert_contains_on_line()
+{
+  VALUE=$1
+  LINE=$2
+  grep --line-number "$VALUE" journal.txt | grep "$LINE:$VALUE" > /dev/null
+  if [ $? -eq 1 ]; then
+    echo -e "${RED}FAILED: assert_contains_on_line $LINE:$VALUE${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_contains_on_line $LINE:$VALUE${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Assert that the given count is equal to the desired
+assert_count()
+{
+  COUNT=$1
+  DESIRED=$2
+  if [ $COUNT -ne $DESIRED ]; then
+    echo -e "${RED}FAILED: assert_count $DESIRED${NC}"
+    FAILED=`expr $FAILED + 1`
+  else
+    echo -e "${GREEN}PASSED: assert_count $DESIRED${NC}"
+    PASSED=`expr $PASSED + 1`
+  fi
+}
+
+#Prints the totals for the asserts run
+print_totals()
+{
+  echo "TESTS: $TESTS"
+  echo "ASSERTS: PASSED $PASSED FAILED $FAILED"
+}

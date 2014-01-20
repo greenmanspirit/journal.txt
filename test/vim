@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "$VALUE" > $1
