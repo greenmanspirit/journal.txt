@@ -26,5 +26,6 @@
 ###############################################################################
 
 #Simple echos whatever is in the environment variable VALUE into the supplied
-#  file.
-echo "$VALUE" > $1
+#  file if VALUE is not "no_write." I added this to simulate closing vim on a
+#  new file without saving. This doesn't create the new file.
+[ "$VALUE" != "no_write" ] && printf "$VALUE" > $1
