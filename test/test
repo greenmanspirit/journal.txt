@@ -35,6 +35,7 @@ else
     MODE=$1
   else
     echo "Unknown mode $1"
+    echo "Valid modes are passed, failed, and both (no mode defaults to this)"
     exit 1
   fi
 fi
