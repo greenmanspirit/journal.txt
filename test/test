@@ -31,7 +31,12 @@ if [ -z "$1" ]; then
   MODE="both"
 else
   #Set mode to what was given
-  MODE=$1
+  if [ $1 = "passed" -o $1 = "failed" -o $1 = "both" ]; then
+    MODE=$1
+  else
+    echo "Unknown mode $1"
+    exit 1
+  fi
 fi
 
 #Find out where we are so I can edit the path so the test vim is used
