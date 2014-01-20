@@ -25,23 +25,40 @@
 #
 ###############################################################################
 
+#Test if we were given a mode and set accordingly
 if [ -z "$1" ]; then
+  #Default value if nothing given
   MODE="both"
 else
+  #Set mode to what was given
   MODE=$1
 fi
 
+#Find out where we are so I can edit the path so the test vim is used
 ABSOLUTE_SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$ABSOLUTE_SCRIPT_PATH")
-
-export USER=test
 export PATH=$SCRIPT_DIR:$PATH
 
+#Set the user environment variable to test for journal.rb
+export USER="test"
+
+#Bring in all the of test functions
 . ./test_functions
 
 #
 # Begin Tests
 #
+
+#Test format
+#  start_test with the name of the test
+#  [optional] remove journal.txt
+#  [optional] prepare journal.txt
+#  [optional] prepare any extra variables needed for the test
+#  [optional] export VALUE to be used by the test vim
+#  ../journal, if stdin is needed for something in journal, ie a question, echo
+#    it and pipe it into journal. Can also capture output if it needs tested.
+#  [optional] process output
+#  as many asserts as needed
 
 start_test "Journal Don't Create File"
 [ -f journal.txt ] && rm journal.txt
@@ -78,6 +95,7 @@ assert_contains_on_line "ENTRYEND" 4
 
 start_test "Query User"
 [ -f journal.txt ] && rm journal.txt
+#returns in echo come out as multiple anwers in journal
 echo "a
 b
 y" | ../journal > output
