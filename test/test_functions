@@ -45,10 +45,10 @@ start_test()
 assert_exists()
 {
   if [ ! -f journal.txt ]; then 
-    echo -e "${RED}FAILED: assert_not_exists${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_exists${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_not_exsts${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_exsts${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }
@@ -57,10 +57,10 @@ assert_exists()
 assert_not_exists()
 {
   if [ -f journal.txt ]; then
-    echo -e "${RED}FAILED: assert_exists${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_not_exists${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_exists${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_not_exists${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }
@@ -80,10 +80,10 @@ assert_file_contains()
   VALUE=$2
   grep "$VALUE" "$FILE" > /dev/null
   if [ $? -eq 1 ]; then
-    echo -e "${RED}FAILED: assert_contains $VALUE${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_file_contains $FILE:$VALUE${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_contains $VALUE${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_file_contains $FILE:$VALUE${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }
@@ -103,10 +103,10 @@ assert_file_not_contains()
   VALUE=$2
   grep "$VALUE" "$FILE" > /dev/null
   if [ $? -eq 0 ]; then
-    echo -e "${RED}FAILED: assert_not_contains $VALUE${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_file_not_contains $FILE:$VALUE${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_not_contains $VALUE${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_file_not_contains $FILE:$VALUE${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }
@@ -118,10 +118,10 @@ assert_contains_on_line()
   LINE=$2
   grep --line-number "$VALUE" journal.txt | grep "$LINE:$VALUE" > /dev/null
   if [ $? -eq 1 ]; then
-    echo -e "${RED}FAILED: assert_contains_on_line $LINE:$VALUE${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_contains_on_line $LINE:$VALUE${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_contains_on_line $LINE:$VALUE${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_contains_on_line $LINE:$VALUE${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }
@@ -132,10 +132,10 @@ assert_count()
   COUNT=$1
   DESIRED=$2
   if [ $COUNT -ne $DESIRED ]; then
-    echo -e "${RED}FAILED: assert_count $DESIRED${NC}"
+    [ ! $MODE = "passed" ] && echo -e "${RED}FAILED: assert_count $DESIRED${NC}"
     FAILED=`expr $FAILED + 1`
   else
-    echo -e "${GREEN}PASSED: assert_count $DESIRED${NC}"
+    [ ! $MODE = "failed" ] && echo -e "${GREEN}PASSED: assert_count $DESIRED${NC}"
     PASSED=`expr $PASSED + 1`
   fi
 }

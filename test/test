@@ -25,6 +25,12 @@
 #
 ###############################################################################
 
+if [ -z "$1" ]; then
+  MODE="both"
+else
+  MODE=$1
+fi
+
 ABSOLUTE_SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$ABSOLUTE_SCRIPT_PATH")
 
@@ -38,7 +44,7 @@ export PATH=$SCRIPT_DIR:$PATH
 #
 
 start_test "Journal Don't Create File"
-rm journal.txt
+[ -f journal.txt ] && rm journal.txt
 echo "n" | ../journal > /dev/null
 assert_not_exists
 
@@ -48,7 +54,7 @@ echo "y" | ../journal > /dev/null
 assert_exists
 
 start_test "New Entry"
-rm journal.txt
+[ -f journal.txt ] && rm journal.txt
 export VALUE="Entry 1"
 echo "y" | ../journal > /dev/null
 assert_contains "$VALUE"
