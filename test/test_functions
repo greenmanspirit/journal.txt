@@ -97,6 +97,20 @@ assert_not_exists()
   fi
 }
 
+#assert_zerolength - Assert that journal.txt is zerolength, ie no content
+#  Inputs:
+#    None
+#  Returns:
+#    None
+assert_zerolength()
+{
+  if [ -s journal.txt ]; then
+    failed "assert_zerolength"
+  else
+    passed "assert_zerolength"
+  fi
+}
+
 #assert_contains - Convenience function for journal.txt file
 #  Inputs:
 #    $1 - Value to test

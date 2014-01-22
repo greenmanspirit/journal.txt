@@ -89,6 +89,20 @@ export VALUE="Entry 2"
 assert_contains "$VALUE"
 assert_not_contains "$VALUE2"
 
+start_test "Blank New Entry Should Not Create"
+[ -f journal.txt ] && rm journal.txt
+export VALUE=""
+echo "y" | ../journal > output
+assert_file_contains output "No entry created"
+assert_zerolength
+
+start_test "Unwritten New Entry Should Not Create"
+[ -f journal.txt ] && rm journal.txt
+export VALUE="no_write"
+echo "y" | ../journal > output
+assert_file_contains output "No entry created"
+assert_zerolength
+
 start_test "Write Entry"
 [ -f journal.txt ] && rm journal.txt
 DATE=`date +'%D'`
@@ -178,6 +192,23 @@ assert_contains "$VALUE"
 assert_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
+
+start_test "Empty Edit no delete"
+echo "$ENTRY1" > journal.txt
+assert_contains "$ENTRY1V"
+export VALUE=""
+echo "n" | ../journal edit $ENTRY1D > output
+assert_file_contains output "Leaving the entry"
+assert_contains "$ENTRY1V"
+
+start_test "Empty Edit yes delete"
+echo "$ENTRY1" > journal.txt
+assert_contains "$ENTRY1V"
+export VALUE=""
+echo "y
+y" | ../journal edit $ENTRY1D > output
+assert_file_contains output "Deleted entry"
+assert_not_contains "$ENTRY1V"
 
 start_test "Delete Entry"
 echo "$ENTRY1" > journal.txt
