@@ -65,7 +65,7 @@ class Journal
     if !File.zero? @filename
       old_file.gets
       date = old_file.gets
-      if(date.split(" ")[1] == todays_date)
+      if(Date.strptime(date.split(" ")[1], "%D") == todays_date)
         old_file.close
         edit_entry todays_date
         return
