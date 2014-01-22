@@ -61,6 +61,10 @@ Example journal.txt file:
 > This is a second journal entry!  
 > ENTRYEND
 
+Testing
+-------
+The test directory contains the Journal.txt testing scripts. To run them, do `cd test && ./test`. The test scripts generate and remove files as they go, including the journal.txt file. For the safest and cleanest run of the tests, run `test` in the test directory.
+
 Contact
 -------
 If you have any issues or feature requests, please report them on the project's [GitHub issue tracker](https://github.com/greenmanspirit/journal.txt/issues) if you cannot find a ticket on them. If you want to contact me for any other reason, you can at <dev@adamhobaugh.com>.
