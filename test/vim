@@ -23,7 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-###############################################################################
+################################################################################
 
 #Simple echos whatever is in the environment variable VALUE into the supplied
 #  file if VALUE is not "no_write." I added this to simulate closing vim on a
