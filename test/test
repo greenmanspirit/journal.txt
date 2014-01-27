@@ -23,7 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-###############################################################################
+################################################################################
 
 #Test if we were given a mode and set accordingly
 if [ -z "$1" ]; then
@@ -66,63 +66,7 @@ export USER="test"
 #  [optional] process output
 #  as many asserts as needed
 
-start_test "Journal Don't Create File"
-[ -f journal.txt ] && rm journal.txt
-echo "n" | ../journal > /dev/null
-assert_not_exists
-
-start_test "Journal Create File"
-[ -f journal.txt ] && rm journal.txt
-echo "y" | ../journal > /dev/null
-assert_exists
-
-start_test "New Entry"
-[ -f journal.txt ] && rm journal.txt
-export VALUE="Entry 1"
-echo "y" | ../journal > /dev/null
-assert_contains "$VALUE"
-
-start_test "Second New Entry Should Edit"
-VALUE2=$VALUE
-export VALUE="Entry 2"
-../journal
-assert_contains "$VALUE"
-assert_not_contains "$VALUE2"
-
-start_test "Blank New Entry Should Not Create"
-[ -f journal.txt ] && rm journal.txt
-export VALUE=""
-echo "y" | ../journal > output
-assert_file_contains output "No entry created"
-assert_zerolength
-
-start_test "Unwritten New Entry Should Not Create"
-[ -f journal.txt ] && rm journal.txt
-export VALUE="no_write"
-echo "y" | ../journal > output
-assert_file_contains output "No entry created"
-assert_zerolength
-
-start_test "Write Entry"
-[ -f journal.txt ] && rm journal.txt
-DATE=`date +'%D'`
-export VALUE="Entry 1"
-echo "y" | ../journal > /dev/null
-assert_contains_on_line "ENTRYSTART" 1
-assert_contains_on_line "ENTRYDATE $DATE" 2
-assert_contains_on_line "Entry 1" 3
-assert_contains_on_line "ENTRYEND" 4
-
-start_test "Query User"
-[ -f journal.txt ] && rm journal.txt
-#returns in echo come out as multiple anwers in journal
-echo "a
-b
-y" | ../journal > output
-COUNT=`sed 's/n\] /n\] \n/g' output | grep -c 'does not exist'`
-assert_count $COUNT 3
-
-#Used in remaining tests
+#Used in the tests
 ENTRY1V="Entry 1"
 ENTRY2V="Entry 2"
 ENTRY3V="Entry 3"
@@ -142,207 +86,14 @@ ENTRYDATE $ENTRY3D
 $ENTRY3V
 ENTRYEND"
 
-start_test "Edit Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
-export VALUE="$ENTRY2V"
-VALUE2="$ENTRY1V"
-../journal edit $ENTRY1D
-assert_contains "$VALUE"
-assert_not_contains "$VALUE2"
-
-start_test "Edit First Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-export VALUE="Entry 4"
-../journal edit $ENTRY1D
-assert_contains "$VALUE"
-assert_not_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-
-start_test "Edit Second Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-export VALUE="Entry 4"
-../journal edit $ENTRY2D
-assert_contains "$VALUE"
-assert_contains "$ENTRY1V"
-assert_not_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-
-start_test "Edit Third Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-export VALUE="Entry 4"
-../journal edit $ENTRY3D
-assert_contains "$VALUE"
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_not_contains "$ENTRY3V"
-
-start_test "Empty Edit no delete"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
-export VALUE=""
-echo "n" | ../journal edit $ENTRY1D > output
-assert_file_contains output "Leaving the entry"
-assert_contains "$ENTRY1V"
-
-start_test "Empty Edit yes delete"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
-export VALUE=""
-echo "y
-y" | ../journal edit $ENTRY1D > output
-assert_file_contains output "Deleted entry"
-assert_not_contains "$ENTRY1V"
-
-start_test "Delete Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
-echo "y" | ../journal delete $ENTRY1D > /dev/null
-assert_not_contains "$ENTRY1V"
-
-start_test "Delete First Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY1D > /dev/null
-assert_not_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-
-start_test "Delete Second Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY2D > /dev/null
-assert_contains "$ENTRY1V"
-assert_not_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-
-start_test "Delete Third Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY3D > /dev/null
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_not_contains "$ENTRY3V"
-
-start_test "List Entries w/o Filter"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-../journal list > output
-assert_file_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_contains output $ENTRY3D
-assert_file_contains output 3
-
-start_test "List Entries Filter */*/14"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-../journal list */*/14 > output
-assert_file_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_not_contains output $ENTRY3D
-assert_file_contains output 2
-
-start_test "List Entries Filter */01/*"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-../journal list */01/* > output
-assert_file_not_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_not_contains output $ENTRY3D
-assert_file_contains output 1
-
-start_test "List Entries Filter 12/*/*"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-../journal list 12/*/* > output
-assert_file_not_contains output $ENTRY1D
-assert_file_not_contains output $ENTRY2D
-assert_file_contains output $ENTRY3D
-assert_file_contains output 1
-
-start_test "Valid Date Month"
-for i in {1..12}
+for TEST in *_test.sh
 do
-echo "" > journal.txt
-DATE=`printf %02d/01/14 $i`
-../journal edit $DATE > output
-assert_file_contains output "No entry for $DATE"
+  . $TEST
 done
 
-start_test "Valid Date Day"
-for i in {1..31}
-do
-echo "" > journal.txt
-DATE=`printf 01/%02d/14 $i`
-../journal edit $DATE > output
-assert_file_contains output "No entry for $DATE"
-done
-
-start_test "Valid Date Bad Month"
-for i in {13..15}
-do
-echo "" > journal.txt
-DATE=`printf %02d/01/14 $i`
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
-done
-
-start_test "Valid Date Bad Day"
-for i in {29..31}
-do
-echo "" > journal.txt
-DATE=`printf 02/%02d/14 $i`
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
-done
-
-start_test "Valid Date Bad Month Format"
-DATE=1/01/14
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
-
-start_test "Valid Date Bad Day Format"
-DATE=01/1/14
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
-
-start_test "Valid Date Bad Year Format"
-DATE=01/01/2014
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
-
+#Print out the total tests, passes and fails
 print_totals
+
+#Cleanup
 [ -f output ] && rm output
 [ -f journal.txt ] && rm journal.txt
