@@ -28,6 +28,9 @@
 # This file contains all of the tests of the edit entry functionality
 #
 
+#These tests needs a .journalrc file existing to create it
+echo "$JOURNALRC" > .journalrc
+
 start_test "Edit Entry"
 echo "$ENTRY1" > journal.txt
 assert_contains "$ENTRY1V"

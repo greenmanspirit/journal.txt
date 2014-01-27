@@ -28,6 +28,9 @@
 # This file contains all of the tests of the utility functions
 #
 
+#These tests needs a .journalrc file existing to create it
+echo "$JOURNALRC" > .journalrc
+
 start_test "Query User"
 [ -f journal.txt ] && rm journal.txt
 #returns in echo come out as multiple anwers in journal

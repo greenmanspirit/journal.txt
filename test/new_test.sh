@@ -28,6 +28,9 @@
 # This file contains all of the tests of the new entry functionality
 #
 
+#These tests needs a .journalrc file existing to create it
+echo "$JOURNALRC" > .journalrc
+
 start_test "New Entry"
 [ -f journal.txt ] && rm journal.txt
 export VALUE="Entry 1"

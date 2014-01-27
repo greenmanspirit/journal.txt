@@ -28,6 +28,9 @@
 # This file contains all of the tests of the list entries functionality
 #
 
+#These tests needs a .journalrc file existing to create it
+echo "$JOURNALRC" > .journalrc
+
 start_test "List Entries w/o Filter"
 echo "$ENTRY1
 $ENTRY2

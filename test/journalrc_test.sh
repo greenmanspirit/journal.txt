@@ -25,50 +25,36 @@
 ################################################################################
 
 #
-# This file contains all of the tests of the delete entry functionality
+# This file contains all of the tests of the .journalrc file and functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
-
-start_test "Delete Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
-echo "y" | ../journal delete $ENTRY1D > /dev/null
-assert_not_contains "$ENTRY1V"
-
-start_test "Delete First Entry"
+#These tests need the journal.txt file to exist, so create it
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY1D > /dev/null
-assert_not_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY2" > journal.txt
 
-start_test "Delete Second Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY2D > /dev/null
-assert_contains "$ENTRY1V"
-assert_not_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+start_test "Journal Don't Create .journalrc"
+[ -f $HOME/.journalrc ] && rm $HOME/.journalrc
+echo "n" | ../journal > output
+assert_not_exists $HOME/.journalrc
+assert_file_contains output "You do not have ~/.journalrc"
 
-start_test "Delete Third Entry"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
-echo "y" | ../journal delete $ENTRY3D > /dev/null
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_not_contains "$ENTRY3V"
+start_test "Journal Create .journalrc"
+[ -f $HOME/.journalrc ] && rm $HOME/.journalrc
+echo "y" | ../journal > output
+assert_exists $HOME/.journalrc
+assert_file_contains output "Created ~/.journalrc"
+assert_file_contains $HOME/.journalrc "EDITOR=vim"
+assert_file_contains $HOME/.journalrc "FILEDIR=$HOME"
+
+start_test "Journal Create .journalrc in \$HOME"
+#An explination here, since $HOME is set to the test directory, the above tests
+#  don't actually ensure that the file is being created in $HOME
+[ -d $SCRIPT_DIR/new_home ] && rm -rf $SCRIPT_DIR/new_home
+mkdir $SCRIPT_DIR/new_home
+HOMEB=$HOME
+HOME=$SCRIPT_DIR/new_home
+echo "y" | ../journal > output
+assert_exists $HOME/.journalrc
+rm -rf $HOME
+HOME=$HOMEB

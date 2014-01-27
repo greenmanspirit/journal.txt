@@ -28,6 +28,9 @@
 # This file contains all of the tests of the journal.txt file and  functionality
 #
 
+#These tests needs a .journalrc file existing to create it
+echo "$JOURNALRC" > .journalrc
+
 start_test "Journal Don't Create File"
 [ -f journal.txt ] && rm journal.txt
 echo "n" | ../journal > /dev/null

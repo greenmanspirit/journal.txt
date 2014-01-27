@@ -427,6 +427,24 @@ def query_user(question, *answers)
   return answer
 end
 
+editor = "vim"
+filedir = ENV["HOME"]
+use_default = false
+
+if !File.exists? "#{ENV["HOME"]}/.journalrc"
+  question = "You do not have ~/.journalrc, would you like to create one?"
+  if query_user(question, "y", "n") == "n"
+    use_default = true
+    puts "Using default settings"
+  else
+    File.open("#{ENV["HOME"]}/.journalrc", "w") do |f|
+      f.puts "EDITOR=#{editor}"
+      f.puts "FILEDIR=#{filedir}"
+    end
+    puts "Created ~/.journalrc using default values"
+  end
+end
+
 #Create a new journal object fo the journal.txt file
 journal = Journal.new "journal.txt"
 

@@ -44,6 +44,7 @@ fi
 ABSOLUTE_SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$ABSOLUTE_SCRIPT_PATH")
 export PATH=$SCRIPT_DIR:$PATH
+export HOME=$SCRIPT_DIR
 
 #Set the user environment variable to test for journal.rb
 export USER="test"
@@ -86,14 +87,26 @@ ENTRYDATE $ENTRY3D
 $ENTRY3V
 ENTRYEND"
 
-for TEST in *_test.sh
-do
-  . $TEST
-done
+JOURNALRC="EDITOR=vim
+FILEDIR=$HOME"
+
+if [ ! -z "$2" ]; then
+  if [ -f ${2}_test.sh ]; then
+    . ${2}_test.sh
+  else
+    echo "No tests for $2"
+  fi
+else
+  for TEST in *_test.sh
+  do
+    . $TEST
+  done
+fi
 
 #Print out the total tests, passes and fails
 print_totals
 
 #Cleanup
 [ -f output ] && rm output
+[ -f .journalrc ] && rm .journalrc
 [ -f journal.txt ] && rm journal.txt
