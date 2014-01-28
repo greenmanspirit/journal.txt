@@ -41,6 +41,15 @@ Installation
   * Place journal.txt into your path or create a symbolic link to journal.txt/journal in a directory already in your path.
   * If you are interested is saving keystrokes, create the alias j=journal.
 
+Configuration
+-------------
+Journal.txt supports a ~/.journalrc configuration file. If you do not have one, you will be prompted to create one. While you can decline and Journal.txt will use default values, you will continue to be prompted to create ~/.journalrc as long as it does not exist.
+
+Each option is in all caps and followed by =. Please to not put = in the value for any of the configurable options. The supported options are:
+
+* EDITOR (default: EDITOR=vim)
+* FILEDIR (default: FILEDIR=\<the contents of $HOME\>)
+
 journal.txt File Format
 -----------------------
 There are three tags needed for each entry in your journal.txt file in order for it to be compatible with this application.

@@ -28,9 +28,10 @@
 require "date"
 
 class Journal
-  def initialize(journal_file)
-    #Just set the filename for the object
+  def initialize(journal_file, editor)
+    #Just set the filename and editor for the object
     @filename = journal_file
+    @editor = editor
 
     #Check for the existance of the journal file and create if it doesn't exist
     #  and user wants to create it, otherwise exit
@@ -77,7 +78,7 @@ class Journal
 
     #Get the new journal entry
     tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{Time.now.strftime("%s")}.txt"
-    system "vim #{tmp_filename}"
+    system "#{@editor} #{tmp_filename}"
 
     #If the user just quit their editor without saving anything, exit gracefully
     if !File.exists?(tmp_filename) || File.zero?(tmp_filename)
@@ -129,7 +130,7 @@ class Journal
     #Place the entry into the tmpfile and open it up for the user to edit
     tmp_file.print entry
     tmp_file.close
-    system "vim #{tmp_filename}"
+    system "#{@editor} #{tmp_filename}"
 
     #Get the edited contents
     entry_contents = ""
@@ -427,26 +428,49 @@ def query_user(question, *answers)
   return answer
 end
 
+#Default values for the .journalrc config options
 editor = "vim"
 filedir = ENV["HOME"]
-use_default = false
 
+#Check to see if the config file exists, if it doesn't make it, if it does get
+#  the configuration options
 if !File.exists? "#{ENV["HOME"]}/.journalrc"
+  #Ask the user if they want to create .journalrc
   question = "You do not have ~/.journalrc, would you like to create one?"
   if query_user(question, "y", "n") == "n"
-    use_default = true
+    #Just go on with the defaults set above if no
     puts "Using default settings"
   else
+    #Create the file using the defaults from above and notify the user
     File.open("#{ENV["HOME"]}/.journalrc", "w") do |f|
       f.puts "EDITOR=#{editor}"
       f.puts "FILEDIR=#{filedir}"
     end
     puts "Created ~/.journalrc using default values"
   end
+else
+  #Open the config file
+  f = File.open("#{ENV["HOME"]}/.journalrc", "r")
+  #Loop through the config file
+  f.each do |line|
+    #Get the setting and it's value, this would break if for some reason there
+    #  is an = in the value. This will be documented.
+    setting, value = line.chomp.split("=")
+    #Use the case statement to set the config variables
+    case setting
+      when "EDITOR"
+        editor = value
+      when "FILEDIR"
+        filedir = value
+      else
+        #If we are here, they gave some unsupported option, let them know
+        puts "Unknown setting in .journalrc, ignoring: #{setting}"
+    end
+  end
 end
 
-#Create a new journal object fo the journal.txt file
-journal = Journal.new "journal.txt"
+#Create a new journal object for the journal.txt file and pass the editor along
+journal = Journal.new("#{filedir}/journal.txt", editor)
 
 #Check to see what action was given as the first argument
 case ARGV[0]
