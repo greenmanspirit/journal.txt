@@ -190,7 +190,7 @@ class Journal
       #Make sure user wants to delete the entry, if not, exit gracefully
       question = "Are you sure you want to delete the entry for #{date.strftime("%D")}?"
       if query_user(question, "y", "n") == "n"
-        cleanup(before_file, after_file)
+        cleanup(before_file, after_file, new_file)
         exit
       end
       #Print the before content and after content to a new file
