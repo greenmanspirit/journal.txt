@@ -254,6 +254,30 @@ class Journal
     puts "Found #{count} entries"
   end
 
+  #view_entry - Print entry to terminal 
+  #  Inputs:
+  #    date - Date to display
+  #  Returns:
+  #    None
+  def view_entry(date)
+    #Find the entry putting before and after file into /dev/null since we don't
+    #  need or want that data in this case.
+    entry = find_entry(File.new("/dev/null", "w"), 
+                        File.new("/dev/null", "w"), 
+                        date)
+
+    #If the entry was not found, tell the user and exit.
+    if entry == false
+      puts "No entry for #{date.strftime("%D")}"
+      exit
+    else
+      #Print the entry to stdout with the date
+      puts "Date: #{date.strftime("%D")}"
+      puts ""
+      puts entry
+    end
+  end
+
   private
 
   #find_entry - Tries to find a journal entry for a given date
@@ -382,6 +406,7 @@ def usage
   puts "  list - Lists all entries unless given a filter. Filter is in the"
   puts "         format MM/DD/YY with * being used as a wilcard: 01/*/14"
   puts "         to list all entries from January 2014."
+  puts "  view - Prints the entry for the given date to the terminal."
   puts "  help - Prints this help message."
   exit
 end
@@ -492,6 +517,12 @@ case ARGV[0]
     end
   when "list"
     journal.list_entries ARGV[1]
+  when "view"
+    if valid_date? ARGV[1]
+      journal.view_entry Date.strptime(ARGV[1], "%D")
+    else
+      puts "Invalid Date - Please enter date in the format MM/DD/YY"
+    end
   when "help"
     #This simply prints the usage message, this is so I can add a unknown
     #  action line below

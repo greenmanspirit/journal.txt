@@ -13,6 +13,7 @@ The following actions are currently supported:
 * edit - Edit the entry for the given date in the format MM/DD/YY.
 * delete - Delete the entry for the given date in the format MM/DD/YY.
 * list - Lists all entries unless given a filter. Filter is in the format MM/DD/YY with \* being used as a wildcard: 01/\*/14 to list all entries from January 2014.
+* view - Prints the entry for the given date to the terminal.
 
 
 ###Additional Details
