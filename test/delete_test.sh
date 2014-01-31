@@ -72,3 +72,9 @@ echo "y" | ../journal delete $ENTRY3D > /dev/null
 assert_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
+
+start_test "No Delete Entry"
+echo "$ENTRY1" > journal.txt
+assert_contains "$ENTRY1V"
+echo "n" | ../journal delete $ENTRY1D > /dev/null
+assert_contains "$ENTRY1V"
