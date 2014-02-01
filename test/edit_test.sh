@@ -85,3 +85,8 @@ echo "y
 y" | ../journal edit $ENTRY1D > output
 assert_file_contains output "Deleted entry"
 assert_not_contains "$ENTRY1V"
+
+start_test "Edit no entry"
+echo "$ENTRY1" > $HOME/journal.txt
+../journal edit $ENTRY2D > output
+assert_file_contains output "No entry for $ENTRY2D"
