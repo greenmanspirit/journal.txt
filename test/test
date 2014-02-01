@@ -40,11 +40,15 @@ else
   fi
 fi
 
-#Find out where we are so I can edit the path so the test vim is used
+#Find out where we are so I can edit the path and home
 ABSOLUTE_SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$ABSOLUTE_SCRIPT_PATH")
+#Edit the path so that the test vim and emacs are used
 export PATH=$SCRIPT_DIR:$PATH
-export HOME=$SCRIPT_DIR
+export HOME=$SCRIPT_DIR/home
+
+#Make our testing home directory
+mkdir $HOME
 
 #Set the user environment variable to test for journal.rb
 export USER="test"
@@ -108,5 +112,4 @@ print_totals
 
 #Cleanup
 [ -f output ] && rm output
-[ -f .journalrc ] && rm .journalrc
-[ -f journal.txt ] && rm journal.txt
+[ -d $HOME ] && rm -rf $HOME

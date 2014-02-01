@@ -28,11 +28,11 @@
 # This file contains all of the tests of the new entry functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+#These tests needs a .journalrc file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
 
 start_test "New Entry"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 export VALUE="Entry 1"
 echo "y" | ../journal > /dev/null
 assert_contains "$VALUE"
@@ -45,21 +45,21 @@ assert_contains "$VALUE"
 assert_not_contains "$VALUE2"
 
 start_test "Blank New Entry Should Not Create"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 export VALUE=""
 echo "y" | ../journal > output
 assert_file_contains output "No entry created"
 assert_zerolength
 
 start_test "Unwritten New Entry Should Not Create"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 export VALUE="no_write"
 echo "y" | ../journal > output
 assert_file_contains output "No entry created"
 assert_zerolength
 
 start_test "Write Entry"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 DATE=`date +'%D'`
 export VALUE="Entry 1"
 echo "y" | ../journal > /dev/null

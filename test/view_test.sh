@@ -28,16 +28,15 @@
 # This file contains all of the tests of the journal.txt file and  functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+#These tests needs a .journalrc and journal.txt file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
+echo "$ENTRY1" > $HOME/journal.txt
 
 start_test "View entry"
-echo "$ENTRY1" > journal.txt
 ../journal view $ENTRY1D > output
 assert_file_contains output "$ENTRY1D"
 assert_file_contains output "$ENTRY1V"
 
 start_test "View no entry"
-echo "$ENTRY1" > journal.txt
 ../journal view $ENTRY2D > output
 assert_file_contains output "No entry"

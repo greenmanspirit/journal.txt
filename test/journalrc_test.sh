@@ -31,7 +31,7 @@
 #These tests need the journal.txt file to exist, so create it
 echo "$ENTRY1
 $ENTRY2
-$ENTRY2" > journal.txt
+$ENTRY3" > $HOME/journal.txt
 
 start_test "Journal Don't Create .journalrc"
 [ -f $HOME/.journalrc ] && rm $HOME/.journalrc
@@ -47,22 +47,9 @@ assert_file_contains output "Created ~/.journalrc"
 assert_file_contains $HOME/.journalrc "EDITOR=vim"
 assert_file_contains $HOME/.journalrc "FILEDIR=$HOME"
 
-start_test "Journal Create .journalrc in \$HOME"
-#An explination here, since $HOME is set to the test directory, the above tests
-#  don't actually ensure that the file is being created in $HOME
-[ -d $SCRIPT_DIR/new_home ] && rm -rf $SCRIPT_DIR/new_home
-mkdir $SCRIPT_DIR/new_home
-HOMEB=$HOME
-HOME=$SCRIPT_DIR/new_home
-echo "y
-y" | ../journal > output
-assert_exists $HOME/.journalrc
-rm -rf $HOME
-HOME=$HOMEB
-
 start_test "Journal use .journalrc EDITOR on new"
 echo "EDITOR=emacs
-FILEDIR=$HOME" > .journalrc
+FILEDIR=$HOME" > $HOME/.journalrc
 export VALUE="Emacs Entry"
 ../journal
 assert_exists emacs_out
@@ -70,7 +57,7 @@ assert_exists emacs_out
 
 start_test "Journal use .journalrc EDITOR on edit"
 echo "EDITOR=emacs
-FILEDIR=$HOME" > .journalrc
+FILEDIR=$HOME" > $HOME/.journalrc
 export VALUE="Emacs Entry"
 ../journal edit $ENTRY1D
 assert_exists emacs_out
@@ -78,27 +65,27 @@ assert_exists emacs_out
 
 start_test "Journal use .journalrc FILEDIR"
 echo "EDITOR=vim
-FILEDIR=$HOME/journal" > .journalrc
-mkdir journal
+FILEDIR=$HOME/journal" > $HOME/.journalrc
+mkdir $HOME/journal
 export VALUE="FILEDIR entry"
 echo "y" | ../journal > /dev/null
 assert_exists $HOME/journal/journal.txt
 rm -rf $HOME/journal
 
 start_test "Journal still add new entry without .journalrc"
-[ -f .journalrc ] && rm .journalrc
+[ -f $HOME/.journalrc ] && rm $HOME/.journalrc
 export VALUE="Entry 4"
 echo "n" | ../journal > /dev/null
 assert_contains "Entry 4"
 
 start_test "Journal still edit entry without .journalrc"
-[ -f .journalrc ] && rm .journalrc
-export VALUE="Entry 4"
+[ -f $HOME/.journalrc ] && rm $HOME/.journalrc
+export VALUE="Entry 5"
 echo "n" | ../journal edit $ENTRY1D > /dev/null
-assert_contains "Entry 4"
+assert_contains "Entry 5"
 
 start_test "Journal ignore bad settings in .journalrc"
 echo "$JOURNALRC
-FOO=bar" > .journalrc
+FOO=bar" > $HOME/.journalrc
 ../journal > output
 assert_file_contains output "ignoring: FOO"

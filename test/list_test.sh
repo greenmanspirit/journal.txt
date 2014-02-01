@@ -28,13 +28,13 @@
 # This file contains all of the tests of the list entries functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
-
-start_test "List Entries w/o Filter"
+#These tests needs a .journalrc and journal.txt file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
+$ENTRY3" > $HOME/journal.txt
+
+start_test "List Entries w/o Filter"
 ../journal list > output
 assert_file_contains output $ENTRY1D
 assert_file_contains output $ENTRY2D
@@ -42,9 +42,6 @@ assert_file_contains output $ENTRY3D
 assert_file_contains output 3
 
 start_test "List Entries Filter */*/14"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
 ../journal list */*/14 > output
 assert_file_contains output $ENTRY1D
 assert_file_contains output $ENTRY2D
@@ -52,9 +49,6 @@ assert_file_not_contains output $ENTRY3D
 assert_file_contains output 2
 
 start_test "List Entries Filter */01/*"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
 ../journal list */01/* > output
 assert_file_not_contains output $ENTRY1D
 assert_file_contains output $ENTRY2D
@@ -62,9 +56,6 @@ assert_file_not_contains output $ENTRY3D
 assert_file_contains output 1
 
 start_test "List Entries Filter 12/*/*"
-echo "$ENTRY1
-$ENTRY2
-$ENTRY3" > journal.txt
 ../journal list 12/*/* > output
 assert_file_not_contains output $ENTRY1D
 assert_file_not_contains output $ENTRY2D

@@ -25,18 +25,18 @@
 ################################################################################
 
 #
-# This file contains all of the tests of the journal.txt file and  functionality
+# This file contains all of the tests of the journal.txt file and functionality
 #
 
 #These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+echo "$JOURNALRC" > $HOME/.journalrc
 
 start_test "Journal Don't Create File"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 echo "n" | ../journal > /dev/null
-assert_not_exists journal.txt
+assert_not_exists $HOME/journal.txt
 
 start_test "Journal Create File"
-[ -f journal.txt ] && rm journal.txt
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 echo "y" | ../journal > /dev/null
-assert_exists journal.txt
+assert_exists $HOME/journal.txt

@@ -83,7 +83,7 @@ assert_exists()
   fi
 }
 
-#assert_not_exists - Assert that the journal.txt file does not exist
+#assert_not_exists - Assert that the $HOME/journal.txt file does not exist
 #  Inputs:
 #    $1 - File we are checking for
 #  Returns:
@@ -97,28 +97,28 @@ assert_not_exists()
   fi
 }
 
-#assert_zerolength - Assert that journal.txt is zerolength, ie no content
+#assert_zerolength - Assert that $HOME/journal.txt is zerolength, ie no content
 #  Inputs:
 #    None
 #  Returns:
 #    None
 assert_zerolength()
 {
-  if [ -s journal.txt ]; then
+  if [ -s $HOME/journal.txt ]; then
     failed "assert_zerolength"
   else
     passed "assert_zerolength"
   fi
 }
 
-#assert_contains - Convenience function for journal.txt file
+#assert_contains - Convenience function for $HOME/journal.txt file
 #  Inputs:
 #    $1 - Value to test
 #  Returns:
 #    None
 assert_contains()
 {
-  assert_file_contains journal.txt "$1"
+  assert_file_contains $HOME/journal.txt "$1"
 }
 
 #assert_file_contains - Assert that file contains value
@@ -141,14 +141,14 @@ assert_file_contains()
   fi
 }
 
-#assert_not_contains - Convenience function for journal.txt file
+#assert_not_contains - Convenience function for $HOME/journal.txt file
 #  Inputs:
 #    $1 - Value to test
 #  Returns:
 #    None
 assert_not_contains()
 {
-  assert_file_not_contains journal.txt "$1"
+  assert_file_not_contains $HOME/journal.txt "$1"
 }
 
 #assert_file_not_contains - Assert that file does not contain value
@@ -171,7 +171,7 @@ assert_file_not_contains()
   fi
 }
 
-#assert_contains_on_line - Assert that value occurs on line in journal.txt
+#assert_contains_on_line - Assert that value occurs on line in $HOME/journal.txt
 #  Inputs:
 #    $1 - Value to look for
 #    $2 - Line that value should exist on
@@ -179,7 +179,7 @@ assert_file_not_contains()
 #    None
 assert_contains_on_line()
 {
-  grep --line-number "$1" journal.txt | grep "$2:$1" > /dev/null
+  grep --line-number "$1" $HOME/journal.txt | grep "$2:$1" > /dev/null
   if [ $? -eq 1 ]; then
     failed "assert_contains_on_line" "$2:$1"
   else

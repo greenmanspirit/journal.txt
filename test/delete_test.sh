@@ -28,22 +28,18 @@
 # This file contains all of the tests of the delete entry functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+#These tests needs a .journalrc file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
 
 start_test "Delete Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
+echo "$ENTRY1" > $HOME/journal.txt
 echo "y" | ../journal delete $ENTRY1D > /dev/null
 assert_not_contains "$ENTRY1V"
 
 start_test "Delete First Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 echo "y" | ../journal delete $ENTRY1D > /dev/null
 assert_not_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
@@ -52,10 +48,7 @@ assert_contains "$ENTRY3V"
 start_test "Delete Second Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 echo "y" | ../journal delete $ENTRY2D > /dev/null
 assert_contains "$ENTRY1V"
 assert_not_contains "$ENTRY2V"
@@ -64,17 +57,13 @@ assert_contains "$ENTRY3V"
 start_test "Delete Third Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 echo "y" | ../journal delete $ENTRY3D > /dev/null
 assert_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
 
 start_test "No Delete Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
+echo "$ENTRY1" > $HOME/journal.txt
 echo "n" | ../journal delete $ENTRY1D > /dev/null
 assert_contains "$ENTRY1V"

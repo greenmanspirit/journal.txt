@@ -28,12 +28,11 @@
 # This file contains all of the tests of the utility functions
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+#These tests needs a .journalrc file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
 
 start_test "Query User"
-[ -f journal.txt ] && rm journal.txt
-#returns in echo come out as multiple anwers in journal
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 echo "a
 b
 y" | ../journal > output
@@ -43,50 +42,53 @@ assert_count $COUNT 3
 start_test "Valid Date Month"
 for i in {1..12}
 do
-echo "" > journal.txt
-DATE=`printf %02d/01/14 $i`
-../journal edit $DATE > output
-assert_file_contains output "No entry for $DATE"
+  echo "" > $HOME/journal.txt
+  DATE=`printf %02d/01/14 $i`
+  ../journal edit $DATE > output
+  assert_file_contains output "No entry for $DATE"
 done
 
 start_test "Valid Date Day"
 for i in {1..31}
 do
-echo "" > journal.txt
-DATE=`printf 01/%02d/14 $i`
-../journal edit $DATE > output
-assert_file_contains output "No entry for $DATE"
+  echo "" > $HOME/journal.txt
+  DATE=`printf 01/%02d/14 $i`
+  ../journal edit $DATE > output
+  assert_file_contains output "No entry for $DATE"
 done
 
 start_test "Valid Date Bad Month"
 for i in {13..15}
 do
-echo "" > journal.txt
-DATE=`printf %02d/01/14 $i`
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
+  echo "" > $HOME/journal.txt
+  DATE=`printf %02d/01/14 $i`
+  ../journal edit $DATE > output
+  assert_file_not_contains output "No entry for $DATE"
 done
 
 start_test "Valid Date Bad Day"
 for i in {29..31}
 do
-echo "" > journal.txt
-DATE=`printf 02/%02d/14 $i`
-../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
+  echo "" > $HOME/journal.txt
+  DATE=`printf 02/%02d/14 $i`
+  ../journal edit $DATE > output
+  assert_file_not_contains output "No entry for $DATE"
 done
 
 start_test "Valid Date Bad Month Format"
+echo "" > $HOME/journal.txt
 DATE=1/01/14
 ../journal edit $DATE > output
 assert_file_not_contains output "No entry for $DATE"
 
 start_test "Valid Date Bad Day Format"
+echo "" > $HOME/journal.txt
 DATE=01/1/14
 ../journal edit $DATE > output
 assert_file_not_contains output "No entry for $DATE"
 
 start_test "Valid Date Bad Year Format"
+echo "" > $HOME/journal.txt
 DATE=01/01/2014
 ../journal edit $DATE > output
 assert_file_not_contains output "No entry for $DATE"

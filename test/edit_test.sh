@@ -28,25 +28,20 @@
 # This file contains all of the tests of the edit entry functionality
 #
 
-#These tests needs a .journalrc file existing to create it
-echo "$JOURNALRC" > .journalrc
+#These tests needs a .journalrc file existing so create it
+echo "$JOURNALRC" > $HOME/.journalrc
 
 start_test "Edit Entry"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
+echo "$ENTRY1" > $HOME/journal.txt
 export VALUE="$ENTRY2V"
-VALUE2="$ENTRY1V"
 ../journal edit $ENTRY1D
 assert_contains "$VALUE"
-assert_not_contains "$VALUE2"
+assert_not_contains "$ENTRY1V"
 
 start_test "Edit First Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 export VALUE="Entry 4"
 ../journal edit $ENTRY1D
 assert_contains "$VALUE"
@@ -57,10 +52,7 @@ assert_contains "$ENTRY3V"
 start_test "Edit Second Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 export VALUE="Entry 4"
 ../journal edit $ENTRY2D
 assert_contains "$VALUE"
@@ -71,10 +63,7 @@ assert_contains "$ENTRY3V"
 start_test "Edit Third Entry"
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > journal.txt
-assert_contains "$ENTRY1V"
-assert_contains "$ENTRY2V"
-assert_contains "$ENTRY3V"
+$ENTRY3" > $HOME/journal.txt
 export VALUE="Entry 4"
 ../journal edit $ENTRY3D
 assert_contains "$VALUE"
@@ -83,16 +72,14 @@ assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
 
 start_test "Empty Edit no delete"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
+echo "$ENTRY1" > $HOME/journal.txt
 export VALUE=""
 echo "n" | ../journal edit $ENTRY1D > output
 assert_file_contains output "Leaving the entry"
 assert_contains "$ENTRY1V"
 
 start_test "Empty Edit yes delete"
-echo "$ENTRY1" > journal.txt
-assert_contains "$ENTRY1V"
+echo "$ENTRY1" > $HOME/journal.txt
 export VALUE=""
 echo "y
 y" | ../journal edit $ENTRY1D > output
