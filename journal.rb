@@ -465,6 +465,9 @@ filedir = ENV["HOME"]
 #Check to see if the config file exists, if it doesn't make it, if it does get
 #  the configuration options
 if !File.exists? "#{ENV["HOME"]}/.journalrc"
+  puts "Default settings:"
+  puts "EDITOR=#{editor}"
+  puts "FILEDIR=#{filedir}"
   #Ask the user if they want to create .journalrc
   question = "You do not have ~/.journalrc, would you like to create one?"
   if query_user(question, "y", "n") == "n"
