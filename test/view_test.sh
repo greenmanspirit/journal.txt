@@ -39,4 +39,4 @@ assert_file_contains output "$ENTRY1V"
 
 start_test "View no entry"
 ../journal view $ENTRY2D > output
-assert_file_contains output "No entry"
+assert_file_contains output "No entry for $ENTRY2D"
