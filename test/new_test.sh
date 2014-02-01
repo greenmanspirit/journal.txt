@@ -51,6 +51,15 @@ echo "y" | ../journal > output
 assert_file_contains output "No entry created"
 assert_zerolength
 
+start_test "Whitespace New Entry Should Not Create"
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
+#Below is a space, tab and newline
+export VALUE=" 	
+"
+echo "y" | ../journal > output
+assert_file_contains output "No entry created"
+assert_zerolength
+
 start_test "Unwritten New Entry Should Not Create"
 [ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 export VALUE="no_write"

@@ -79,28 +79,34 @@ class Journal
     tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{Time.now.strftime("%s")}.txt"
     system "#{@editor} #{tmp_filename}"
 
-    #If the user just quit their editor without saving anything, return gracefully
-    if !File.exists?(tmp_filename) || File.zero?(tmp_filename)
-      puts "No entry created for today."
+    #Get contents of new entry
+    entry_contents = ""
+    if File.exists? tmp_filename
+      tmp_file = File.open(tmp_filename, "r")
+      tmp_file.each do |line|
+        entry_contents += line
+      end
+      #Cleanup tmp_file since we don't need it anymore
+      cleanup(tmp_file)
+    end
+
+    #If user put no real contents in the entry, return gracefully
+    if entry_contents.strip.empty?
+      puts "No entry created for today"
       return
     end
 
     #Create File objects for the files needed
     new_file = File.new("#{@filename}.new", "w+")
 
-    #Add the new journal entry
-    entry_contents = ""
-    tmp_file = File.open(tmp_filename, "r")
-    tmp_file.each do |line|
-       entry_contents += line
-    end
+    #Write out the journal entry
     write_entry(new_file, entry_contents, todays_date)
 
     #Add the rest of the journal
     write_file(old_file, new_file)
 
     #File cleanup
-    cleanup(old_file, tmp_file)
+    cleanup(old_file)
     new_file.close
     File.rename("#{@filename}.new", @filename)
   end
@@ -138,8 +144,8 @@ class Journal
       entry_contents += line
     end
 
-    #If the user emptied the file, that is essentially a delete
-    if entry_contents.empty?
+    #If the user emptied the file of real contents, that is essentially a delete
+    if entry_contents.strip.empty?
       #Close out the files and clean everything up
       cleanup(before_file, after_file, tmp_file, new_file)
 
