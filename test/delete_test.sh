@@ -63,12 +63,12 @@ assert_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
 
-start_test "No Delete Entry"
+start_test "Delete Entry No"
 echo "$ENTRY1" > $HOME/journal.txt
 echo "n" | ../journal delete $ENTRY1D > /dev/null
 assert_contains "$ENTRY1V"
 
-start_test "Delete no entry"
+start_test "Delete No entry"
 echo "$ENTRY1" > $HOME/journal.txt
 ../journal delete $ENTRY2D > output
 assert_file_contains output "No entry for $ENTRY2D"

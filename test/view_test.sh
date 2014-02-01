@@ -32,11 +32,11 @@
 echo "$JOURNALRC" > $HOME/.journalrc
 echo "$ENTRY1" > $HOME/journal.txt
 
-start_test "View entry"
+start_test "View Entry"
 ../journal view $ENTRY1D > output
 assert_file_contains output "$ENTRY1D"
 assert_file_contains output "$ENTRY1V"
 
-start_test "View no entry"
+start_test "View No Entry"
 ../journal view $ENTRY2D > output
 assert_file_contains output "No entry for $ENTRY2D"

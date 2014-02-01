@@ -43,46 +43,46 @@ test_cleanup()
 #These tests needs a .journalrc file existing so create it
 echo "$JOURNALRC" > $HOME/.journalrc
 
-start_test "Cleanup New Entry"
+start_test "Cleanup on New Entry"
 [ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 export VALUE=$ENTRY1V
 echo "y" | ../journal > /dev/null
 assert_file_contains $HOME/journal.txt "$ENTRY1V"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Edit"
+start_test "Cleanup on Edit"
 echo "$ENTRY1" > $HOME/journal.txt
 export VALUE="$ENTRY2V"
 ../journal edit $ENTRY1D > /dev/null
 assert_file_contains $HOME/journal.txt "$ENTRY2V"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Edit not found"
+start_test "Cleanup on Edit Not Found"
 echo "$ENTRY1" > $HOME/journal.txt
 ../journal edit $ENTRY2D > output
 assert_file_contains output "No entry"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Edit empty entry"
+start_test "Cleanup on Edit Empty Entry"
 echo "$ENTRY1" > $HOME/journal.txt
 export VALUE=""
 echo "n" | ../journal edit $ENTRY1D > output
 assert_file_contains output "Leaving"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Delete"
+start_test "Cleanup on Delete"
 echo "$ENTRY1" > $HOME/journal.txt
 echo "y" | ../journal delete $ENTRY1D > /dev/null
 assert_file_not_contains $HOME/journal.txt "$ENTRY1V"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Delete not found"
+start_test "Cleanup on Delete Not Found"
 echo "$ENTRY1" > $HOME/journal.txt
 ../journal delete $ENTRY2D > output
 assert_file_contains output "No entry"
 test_cleanup $HOME/journal.txt
 
-start_test "Cleanup Delete no"
+start_test "Cleanup on Delete No"
 echo "$ENTRY1" > $HOME/journal.txt
 echo "n" | ../journal delete $ENTRY1D > /dev/null
 assert_file_contains $HOME/journal.txt "$ENTRY1V"

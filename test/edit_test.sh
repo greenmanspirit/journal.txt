@@ -71,14 +71,14 @@ assert_contains "$ENTRY1V"
 assert_contains "$ENTRY2V"
 assert_not_contains "$ENTRY3V"
 
-start_test "Empty Edit no delete"
+start_test "Empty Edit No Delete"
 echo "$ENTRY1" > $HOME/journal.txt
 export VALUE=""
 echo "n" | ../journal edit $ENTRY1D > output
 assert_file_contains output "Leaving the entry"
 assert_contains "$ENTRY1V"
 
-start_test "Empty Edit yes delete"
+start_test "Empty Edit Yes Delete"
 echo "$ENTRY1" > $HOME/journal.txt
 export VALUE=""
 echo "y
@@ -86,7 +86,7 @@ y" | ../journal edit $ENTRY1D > output
 assert_file_contains output "Deleted entry"
 assert_not_contains "$ENTRY1V"
 
-start_test "Edit no entry"
+start_test "Edit No Entry"
 echo "$ENTRY1" > $HOME/journal.txt
 ../journal edit $ENTRY2D > output
 assert_file_contains output "No entry for $ENTRY2D"

@@ -47,7 +47,7 @@ assert_file_contains output "Created ~/.journalrc"
 assert_file_contains $HOME/.journalrc "EDITOR=vim"
 assert_file_contains $HOME/.journalrc "FILEDIR=$HOME"
 
-start_test "Journal use .journalrc EDITOR on new"
+start_test "Journal Use .journalrc EDITOR on New"
 echo "EDITOR=emacs
 FILEDIR=$HOME" > $HOME/.journalrc
 export VALUE="Emacs Entry"
@@ -55,7 +55,7 @@ export VALUE="Emacs Entry"
 assert_exists emacs_out
 [ -f emacs_out ] && rm emacs_out
 
-start_test "Journal use .journalrc EDITOR on edit"
+start_test "Journal Use .journalrc EDITOR on Edit"
 echo "EDITOR=emacs
 FILEDIR=$HOME" > $HOME/.journalrc
 export VALUE="Emacs Entry"
@@ -63,7 +63,7 @@ export VALUE="Emacs Entry"
 assert_exists emacs_out
 [ -f emacs_out ] && rm emacs_out
 
-start_test "Journal use .journalrc FILEDIR"
+start_test "Journal Use .journalrc FILEDIR"
 echo "EDITOR=vim
 FILEDIR=$HOME/journal" > $HOME/.journalrc
 mkdir $HOME/journal
@@ -72,19 +72,19 @@ echo "y" | ../journal > /dev/null
 assert_exists $HOME/journal/journal.txt
 rm -rf $HOME/journal
 
-start_test "Journal still add new entry without .journalrc"
+start_test "Journal Still Add New Entry Without .journalrc"
 [ -f $HOME/.journalrc ] && rm $HOME/.journalrc
 export VALUE="Entry 4"
 echo "n" | ../journal > /dev/null
 assert_contains "Entry 4"
 
-start_test "Journal still edit entry without .journalrc"
+start_test "Journal Still Edit Entry Without .journalrc"
 [ -f $HOME/.journalrc ] && rm $HOME/.journalrc
 export VALUE="Entry 5"
 echo "n" | ../journal edit $ENTRY1D > /dev/null
 assert_contains "Entry 5"
 
-start_test "Journal ignore bad settings in .journalrc"
+start_test "Journal Ignore Bad Settings in .journalrc"
 echo "$JOURNALRC
 FOO=bar" > $HOME/.journalrc
 ../journal > output
