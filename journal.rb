@@ -406,7 +406,7 @@ end
 #    False if the string is empty or invalid
 def valid_date?(date)
   #Make sure we were passed something and that it is in the correct format
-  if !date.nil? && !/(\d{2}\/\d{2}\/\d{2})/.match(ARGV[1]).nil?
+  if !date.nil? && !/^(\d{2}\/\d{2}\/\d{2})$/.match(ARGV[1]).nil?
     #Split the date and test to ensure it is valid, if so return true
     date_parts = date.split "/"
     if Date.valid_date?(date_parts[2].to_i,

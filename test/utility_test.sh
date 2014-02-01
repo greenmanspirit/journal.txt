@@ -58,37 +58,49 @@ do
 done
 
 start_test "Valid Date Bad Month"
-for i in {13..15}
+for i in -1 0 13 14
 do
   echo "" > $HOME/journal.txt
   DATE=`printf %02d/01/14 $i`
   ../journal edit $DATE > output
-  assert_file_not_contains output "No entry for $DATE"
+  assert_file_contains output "Invalid Date"
 done
 
 start_test "Valid Date Bad Day"
-for i in {29..31}
+for i in -1 0 29 32
 do
   echo "" > $HOME/journal.txt
   DATE=`printf 02/%02d/14 $i`
   ../journal edit $DATE > output
-  assert_file_not_contains output "No entry for $DATE"
+  assert_file_contains output "Invalid Date"
 done
 
 start_test "Valid Date Bad Month Format"
 echo "" > $HOME/journal.txt
 DATE=1/01/14
 ../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
+assert_file_contains output "Invalid Date"
 
 start_test "Valid Date Bad Day Format"
 echo "" > $HOME/journal.txt
 DATE=01/1/14
 ../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
+assert_file_contains output "Invalid Date"
 
 start_test "Valid Date Bad Year Format"
 echo "" > $HOME/journal.txt
 DATE=01/01/2014
 ../journal edit $DATE > output
-assert_file_not_contains output "No entry for $DATE"
+assert_file_contains output "Invalid Date"
+
+start_test "Valid Date Bad on Delete"
+echo "" > $HOME/journal.txt
+DATE=01/01/2014
+../journal delete $DATE > output
+assert_file_contains output "Invalid Date"
+
+start_test "Valid Date Bad on View"
+echo "" > $HOME/journal.txt
+DATE=01/01/2014
+../journal view $DATE > output
+assert_file_contains output "Invalid Date"
