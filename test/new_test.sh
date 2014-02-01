@@ -57,13 +57,3 @@ export VALUE="no_write"
 echo "y" | ../journal > output
 assert_file_contains output "No entry created"
 assert_zerolength
-
-start_test "Write Entry"
-[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
-DATE=`date +'%D'`
-export VALUE="Entry 1"
-echo "y" | ../journal > /dev/null
-assert_contains_on_line "ENTRYSTART" 1
-assert_contains_on_line "ENTRYDATE $DATE" 2
-assert_contains_on_line "Entry 1" 3
-assert_contains_on_line "ENTRYEND" 4

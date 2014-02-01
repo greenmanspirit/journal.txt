@@ -31,12 +31,55 @@
 #These tests needs a .journalrc file existing to create it
 echo "$JOURNALRC" > $HOME/.journalrc
 
-start_test "Journal Don't Create File"
+start_test "Journal don't create file"
 [ -f $HOME/journal.txt ] && rm $HOME/journal.txt
-echo "n" | ../journal > /dev/null
+echo "n" | ../journal &>/dev/null
 assert_not_exists $HOME/journal.txt
 
-start_test "Journal Create File"
+start_test "Journal create file"
 [ -f $HOME/journal.txt ] && rm $HOME/journal.txt
 echo "y" | ../journal > /dev/null
 assert_exists $HOME/journal.txt
+
+start_test "Entry format"
+[ -f $HOME/journal.txt ] && rm $HOME/journal.txt
+DATE=`date +'%D'`
+export VALUE="Entry 1"
+echo "y" | ../journal > /dev/null
+assert_contains_on_line "ENTRYSTART" 1
+assert_contains_on_line "ENTRYDATE $DATE" 2
+assert_contains_on_line "Entry 1" 3
+assert_contains_on_line "ENTRYEND" 4
+
+start_test "Descending entries new"
+echo "$ENTRY1" > $HOME/journal.txt
+DATE=`date +'%D'`
+export VALUE="Entry 2"
+../journal > /dev/null
+assert_contains_on_line "ENTRYSTART" 1
+assert_contains_on_line "ENTRYDATE $DATE" 2
+assert_contains_on_line "ENTRYSTART" 5
+assert_contains_on_line "ENTRYDATE $ENTRY1D" 6
+
+start_test "Descending entries edit"
+echo "$ENTRY1
+$ENTRY2
+$ENTRY3" > $HOME/journal.txt
+export VALUE="Entry 4"
+../journal edit $ENTRY2D > /dev/null
+assert_contains_on_line "ENTRYSTART" 1
+assert_contains_on_line "ENTRYDATE $ENTRY1D" 2
+assert_contains_on_line "ENTRYSTART" 5
+assert_contains_on_line "ENTRYDATE $ENTRY2D" 6
+assert_contains_on_line "ENTRYSTART" 9
+assert_contains_on_line "ENTRYDATE $ENTRY3D" 10
+
+start_test "Descending entries delete"
+echo "$ENTRY1
+$ENTRY2
+$ENTRY3" > $HOME/journal.txt
+echo "y" | ../journal delete $ENTRY2D > /dev/null
+assert_contains_on_line "ENTRYSTART" 1
+assert_contains_on_line "ENTRYDATE $ENTRY1D" 2
+assert_contains_on_line "ENTRYSTART" 5
+assert_contains_on_line "ENTRYDATE $ENTRY3D" 6
