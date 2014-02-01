@@ -34,7 +34,7 @@ class Journal
     @editor = editor
 
     #Check for the existance of the journal file and create if it doesn't exist
-    #  and user wants to create it, otherwise exit
+    #  and user wants to create it, otherwise abort
     if !File.exist? @filename
       #print "Journal file [#{@filename}] does not exist. "
       #print "Would you like to create it? [y/n](n) "
@@ -45,8 +45,7 @@ class Journal
           puts "Created #{@filename}"
         end
       else
-        puts "Cannot work without a journal file, exiting."
-        exit
+        abort "Cannot work without a journal file, exiting."
       end
     end
   end
@@ -66,7 +65,7 @@ class Journal
     if !File.zero? @filename
       old_file.gets
       date = old_file.gets
-      if(Date.strptime(date.split(" ")[1], "%D") == todays_date)
+      if read_date(date.split(" ")[1]) == todays_date
         old_file.close
         edit_entry todays_date
         return
@@ -80,7 +79,7 @@ class Journal
     tmp_filename = "/tmp/journal_#{ENV["USER"]}_#{Time.now.strftime("%s")}.txt"
     system "#{@editor} #{tmp_filename}"
 
-    #If the user just quit their editor without saving anything, exit gracefully
+    #If the user just quit their editor without saving anything, return gracefully
     if !File.exists?(tmp_filename) || File.zero?(tmp_filename)
       puts "No entry created for today."
       return
@@ -122,9 +121,9 @@ class Journal
     #Get the requested entry or state no entry if none returned
     entry = find_entry(before_file, after_file, date)
     if !entry 
-      puts "No entry for #{date.strftime("%D")}"
+      puts "No entry for #{write_date(date)}"
       cleanup(before_file, after_file, tmp_file, new_file)
-      exit
+      return
     end
 
     #Place the entry into the tmpfile and open it up for the user to edit
@@ -139,21 +138,21 @@ class Journal
       entry_contents += line
     end
 
-    #If the user emptied the file, that is essentially a delete, ask if they
-    #  want to delete the entry instead, otherwise, we won't edit the entry
+    #If the user emptied the file, that is essentially a delete
     if entry_contents.empty?
+      #Close out the files and clean everything up
+      cleanup(before_file, after_file, tmp_file, new_file)
+
+      #Ask if they want to delete the entry instead, otherwise, we won't edit 
+      #  the entry
       puts "This would create an empty journal entry."
       question = "Would you like to delete the entry?"
       if query_user(question, "y", "n") == "n"
         puts "Leaving the entry as is."
-
-        #Close out the files and clean everything up
-        cleanup(before_file, after_file, tmp_file, new_file)
-        exit
       else
         delete_entry date
-        return
       end
+      return
     end
 
     #Print the the before content, edited entry and after entry to a new file
@@ -181,17 +180,17 @@ class Journal
     #Get the request entry if it exists
     entry = find_entry(before_file, after_file, date)
 
-    #If we didn't find an entry, exit gracefully
-    if entry == false
-      puts "No entry to delete for #{date.strftime("%D")}"
+    #If we didn't find an entry, return gracefully
+    if !entry
+      puts "No entry for #{write_date(date)}"
       cleanup(before_file, after_file, new_file)
-      exit
+      return
     else
-      #Make sure user wants to delete the entry, if not, exit gracefully
-      question = "Are you sure you want to delete the entry for #{date.strftime("%D")}?"
+      #Make sure user wants to delete the entry, if not, return gracefully
+      question = "Are you sure you want to delete the entry for #{write_date(date)}?"
       if query_user(question, "y", "n") == "n"
         cleanup(before_file, after_file, new_file)
-        exit
+        return
       end
       #Print the before content and after content to a new file
       write_file(before_file, new_file)
@@ -213,27 +212,15 @@ class Journal
     #Open the file so we can search it
     file = File.open(@filename, 'r');
 
-    #If we were given a filter, process it
-    if !filter.nil?
-      #Split the filter up
-      month, day, year = filter.split "/"
-      #Check each part for a wildcard and put in \d* where necessary
-      if month == "*"
-        month = "\\d*"
-      end
-      if day == "*"
-        day = "\\d*"
-      end
-      if year == "*"
-        year = "\\d*"
-      end
-    else
-      #Set default regex pattern for each part
-      month = day = year = "\\d*"
-    end
+    #Build default regex
+    filter_regex = /.*/
 
-    #Build the regex
-    filter_regex = /#{month}\/#{day}\/#{year}/
+    #If we were given a filter, process it and build regex
+    if !filter.nil?
+      filter = filter.sub("/", "\\/")
+      filter.sub!("*", "\\d")
+      filter_regex = /#{filter}/
+    end
 
     #This is to keep track of how many entries we have found
     count = 0
@@ -266,13 +253,12 @@ class Journal
                         File.new("/dev/null", "w"), 
                         date)
 
-    #If the entry was not found, tell the user and exit.
-    if entry == false
-      puts "No entry for #{date.strftime("%D")}"
-      exit
+    #If the entry was not found, tell the user
+    if !entry
+      puts "No entry for #{write_date(date)}"
     else
       #Print the entry to stdout with the date
-      puts "Date: #{date.strftime("%D")}"
+      puts "Date: #{write_date(date)}"
       puts ""
       puts entry
     end
@@ -325,10 +311,11 @@ class Journal
         end
       #If we are on a date line, test the date to see if it's the one we want
       elsif line.start_with?("ENTRYDATE ")
-        current_entry_date = Date.strptime(line.split(" ")[1], "%D")
+        current_entry_date = read_date line.split(" ")[1]
         if current_entry_date == date
           entry_found = true
         elsif !entry_found && current_entry_date < date
+          #Break the search if we have surpassed the date we want
           break
         end
         next
@@ -362,7 +349,7 @@ class Journal
   #    None
   def write_entry(file, content, date)
     file.puts "ENTRYSTART"
-    file.puts "ENTRYDATE #{date.strftime("%D")}"
+    file.puts "ENTRYDATE #{write_date(date)}"
     file.puts content
     file.puts "ENTRYEND"
   end
@@ -408,7 +395,7 @@ def usage
   puts "         to list all entries from January 2014."
   puts "  view - Prints the entry for the given date to the terminal."
   puts "  help - Prints this help message."
-  exit
+  return
 end
 
 #valid_date? - Checks that the date given but the user is valid
@@ -451,6 +438,24 @@ def query_user(question, *answers)
 
   #return the answer we were given by the user
   return answer
+end
+
+#read_date - Reads date using %D format
+#  Inputs:
+#    date - Date to read
+#  Returns:
+#    None
+def read_date(date)
+  return Date.strptime(date, "%D")
+end
+
+#write_date - Writes date using %D format
+#  Inputs:
+#    date - Date to write
+#  Returns:
+#    None
+def write_date(date) 
+  return date.strftime("%D")
 end
 
 #Default values for the .journalrc config options
@@ -505,13 +510,13 @@ case ARGV[0]
   when "edit"
     #Check for a valid date and edit if we have one
     if valid_date? ARGV[1]
-      journal.edit_entry Date.strptime(ARGV[1], "%D")
+      journal.edit_entry read_date(ARGV[1])
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
   when "delete"
     if valid_date? ARGV[1]
-      journal.delete_entry Date.strptime(ARGV[1], "%D")
+      journal.delete_entry read_date(ARGV[1])
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
@@ -519,7 +524,7 @@ case ARGV[0]
     journal.list_entries ARGV[1]
   when "view"
     if valid_date? ARGV[1]
-      journal.view_entry Date.strptime(ARGV[1], "%D")
+      journal.view_entry read_date(ARGV[1])
     else
       puts "Invalid Date - Please enter date in the format MM/DD/YY"
     end
