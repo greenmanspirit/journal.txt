@@ -133,7 +133,7 @@ assert_file_contains()
     failed "assert_file_contains" "$1:$2"
     return
   fi
-  grep "$2" "$1" 2>&1 > /dev/null
+  grep -F "$2" "$1" 2>&1 > /dev/null
   if [ $? -eq 1 ]; then
     failed "assert_file_contains" "$1:$2"
   else
@@ -163,7 +163,7 @@ assert_file_not_contains()
     failed "assert_file_contains" "$1:$2"
     return
   fi
-  grep "$2" "$1" 2>&1 > /dev/null
+  grep -F "$2" "$1" 2>&1 > /dev/null
   if [ $? -eq 0 ]; then
     failed "assert_file_not_contains" "$1:$2"
   else

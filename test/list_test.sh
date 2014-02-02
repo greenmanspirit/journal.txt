@@ -32,32 +32,70 @@
 echo "$JOURNALRC" > $HOME/.journalrc
 echo "$ENTRY1
 $ENTRY2
-$ENTRY3" > $HOME/journal.txt
+$ENTRY3
+ENTRYSTART
+ENTRYDATE 11/15/13
+Entry 4
+ENDENTRY" > $HOME/journal.txt
 
 start_test "List Entries w/o Filter"
 ../journal list > output
-assert_file_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_contains output $ENTRY3D
-assert_file_contains output 3
+assert_file_contains output "$ENTRY1D"
+assert_file_contains output "$ENTRY2D"
+assert_file_contains output "$ENTRY3D"
+assert_file_contains output "11/15/13"
+assert_file_contains output "4"
+
+start_test "List Entries Filter */01/14"
+../journal list t*/01/14 > output
+assert_file_contains output "/^\d\d\/01\/14$/"
+assert_file_not_contains output "$ENTRY1D"
+assert_file_contains output "$ENTRY2D"
+assert_file_not_contains output "$ENTRY3D"
+assert_file_not_contains output "11/15/13"
+assert_file_contains output "1"
+
+start_test "List Entries Filter 11/*/13"
+../journal list t11/*/13 > output
+assert_file_contains output "/^11\/\d\d\/13$/"
+assert_file_not_contains output "$ENTRY1D"
+assert_file_not_contains output "$ENTRY2D"
+assert_file_not_contains output "$ENTRY3D"
+assert_file_contains output "11/15/13"
+assert_file_contains output "1"
+
+start_test "List Entries Filter 11/15/*"
+../journal list t11/15/* > output
+assert_file_contains output "/^11\/15\/\d\d$/"
+assert_file_not_contains output "$ENTRY1D"
+assert_file_not_contains output "$ENTRY2D"
+assert_file_not_contains output "$ENTRY3D"
+assert_file_contains output "11/15/13"
+assert_file_contains output "1"
 
 start_test "List Entries Filter */*/14"
-../journal list */*/14 > output
-assert_file_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_not_contains output $ENTRY3D
-assert_file_contains output 2
+../journal list t*/*/14 > output
+assert_file_contains output "/^\d\d\/\d\d\/14$/"
+assert_file_contains output "$ENTRY1D"
+assert_file_contains output "$ENTRY2D"
+assert_file_not_contains output "$ENTRY3D"
+assert_file_not_contains output "11/15/13"
+assert_file_contains output "2"
 
 start_test "List Entries Filter */01/*"
-../journal list */01/* > output
-assert_file_not_contains output $ENTRY1D
-assert_file_contains output $ENTRY2D
-assert_file_not_contains output $ENTRY3D
-assert_file_contains output 1
+../journal list t*/01/* > output
+assert_file_contains output "/^\d\d\/01\/\d\d$/"
+assert_file_not_contains output "$ENTRY1D"
+assert_file_contains output "$ENTRY2D"
+assert_file_not_contains output "$ENTRY3D"
+assert_file_not_contains output "11/15/13"
+assert_file_contains output "1"
 
 start_test "List Entries Filter 12/*/*"
-../journal list 12/*/* > output
-assert_file_not_contains output $ENTRY1D
-assert_file_not_contains output $ENTRY2D
-assert_file_contains output $ENTRY3D
-assert_file_contains output 1
+../journal list t12/*/* > output
+assert_file_contains output "/^12\/\d\d\/\d\d$/"
+assert_file_not_contains output "$ENTRY1D"
+assert_file_not_contains output "$ENTRY2D"
+assert_file_contains output "$ENTRY3D"
+assert_file_not_contains output "11/15/13"
+assert_file_contains output "1"

@@ -221,11 +221,31 @@ class Journal
     #Build default regex
     filter_regex = /.*/
 
-    #If we were given a filter, process it and build regex
+    #If we were given a filter
     if !filter.nil?
-      filter = filter.sub("/", "\\/")
-      filter.sub!("*", "\\d")
-      filter_regex = /#{filter}/
+      #Since the string being passed in is frozen, make an unfrozen copy
+      unfrozen_filter = filter.dup
+
+      #Since I don't have low level access to the code from my test suite and
+      #  I would like to see my regex in testing so I ensure it is what I 
+      #  expect, I put this flag in here to print out the regex if requested.
+      test = false
+
+      #If filter starts with a t (the test flag) then remove it and flag test
+      if unfrozen_filter.start_with? "t"
+        unfrozen_filter.sub!("t", "")
+        test = true
+      end
+      #Change / in date to \/ for valid regex
+      unfrozen_filter.gsub!("/", "\\/")
+      #Change * to \d\d to grab whatever two digit date
+      unfrozen_filter.gsub!("*", "\\d\\d")
+      #Build the regex with ^ and & to ensure whole date matches
+      filter_regex = /^#{unfrozen_filter}$/
+      #If test was set above, print out the regex
+      if test
+        puts filter_regex.inspect
+      end
     end
 
     #This is to keep track of how many entries we have found
