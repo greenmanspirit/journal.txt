@@ -413,14 +413,16 @@ end
 def usage
   puts "Usage: journal action <date> <filter>"
   puts "Actions:"
-  puts "  new - Create a new journal entry for today."
-  puts "  edit - Edit an entry for the given date in the format MM/DD/YY."
-  puts "  delete - Delete entry for the given date in the format MM/DD/YY."
+  puts "  new - Create a new journal entry for today. (default action if"
+  puts "        none given)"
+  puts "  edit - Edit the entry for the given date in the format MM/DD/YY."
+  puts "  delete - Delete the entry for the given date in the format MM/DD/YY."
   puts "  list - Lists all entries unless given a filter. Filter is in the"
   puts "         format MM/DD/YY with * being used as a wilcard: 01/*/14"
   puts "         to list all entries from January 2014."
   puts "  view - Prints the entry for the given date to the terminal."
   puts "  help - Prints this help message."
+  puts "  version - Prints the version number."
   return
 end
 
@@ -561,6 +563,8 @@ case ARGV[0]
     #This simply prints the usage message, this is so I can add a unknown
     #  action line below
     usage
+  when "version"
+    puts "Journal.txt v1.0"
   else
     #If an unrecognized action, print usage
     puts "Unknown action: #{ARGV[0]}"
