@@ -9,15 +9,16 @@ Usage
 ###Actions
 The following actions are currently supported:
 
-* new - Create a new journal entry for today (default action if none given).
+* new - Create a new journal entry for today. (default action if none given)
 * edit - Edit the entry for the given date in the format MM/DD/YY.
 * delete - Delete the entry for the given date in the format MM/DD/YY.
 * list - Lists all entries unless given a filter. Filter is in the format MM/DD/YY with \* being used as a wildcard: 01/\*/14 to list all entries from January 2014.
 * view - Prints the entry for the given date to the terminal.
+* help - Prints this list.
+* version - Prints the version number.
 
 
 ###Additional Details
-* journal.txt file will live wherever you run the journal script.
 * The only date format recognized is MM/DD/YY.
 
 Installation
@@ -59,21 +60,23 @@ There are three tags needed for each entry in your journal.txt file in order for
 * ENTRYDATE - The date of the journal entry in the format MM/DD/YY, must fome directly after ENTRYSTART.
 * ENTRYEND - This designates the end of a journal entry.
 
-Example journal.txt file:
+In addition to the three tags, your entries have to be in decending order by date. Example journal.txt file:
 > ENTRYSTART  
 > ENTRYDATE 01/01/14  
-> This is a journal entry!  
->
-> Isn't it cool?  
+> This is a second journal entry!  
 > ENTRYEND  
 > ENTRYSTART  
 > ENTRYDATE 12/31/13  
-> This is a second journal entry!  
+> This is a journal entry!  
+>
+> Isn't it cool?  
 > ENTRYEND
 
 Testing
 -------
-The test directory contains the Journal.txt testing scripts. To run them, do `cd test && ./test`. The test scripts generate and remove files as they go, including the journal.txt file. For the safest and cleanest run of the tests, run `test` in the test directory.
+The test directory contains the Journal.txt testing scripts. The test scripts generate and remove files as they go, including the journal.txt file. For the safest and cleanest run of the tests, please run them in the test directory. To run the tests, just do `./test`. 
+
+You can also pass `passed`, `failed` or `both` to `./test` to filter which asserts you want to see. In addition you can run any individual \<name\>\_test.sh file but passing \<name\> as the second argument. You must supply `passed`, `failed` or `both` as the first argument if you want to run just \<name\>.
 
 Contact
 -------
