@@ -39,7 +39,8 @@ class Journal
       #print "Journal file [#{@filename}] does not exist. "
       #print "Would you like to create it? [y/n](n) "
       #if STDIN.gets.chomp.downcase == "y"
-      question = "Journal file [#{@filename}] does not exist?"
+      puts "Journal file [#{@filename}] does not exist."
+      question = "Do you want to create it?"
       if query_user(question, "y", "n") == "y"
         File.open(@filename, "w") do |f|
           puts "Created #{@filename}"
